@@ -1,0 +1,14 @@
+[package]
+name = "egui-unity"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+egui = { version = "0.19", features = ["bytemuck"] }
+lazy_static = { version = "1.4" }
+protobuf = { version = "3.2" }
+bytemuck = { version = "1.12" }

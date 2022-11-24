@@ -1,0 +1,187 @@
+syntax = "proto3";
+
+package proto;
+
+import "common.proto";
+
+message Modifiers {
+  bool alt = 1;
+  bool ctrl = 2;
+  bool shift = 3;
+  bool mac_cmd = 4;
+  bool command = 5;
+}
+
+enum KeyType {
+  KT_NONE = 0;
+  ArrowDown = 1;
+  ArrowLeft = 2;
+  ArrowRight = 3;
+  ArrowUp = 4;
+
+  Escape = 5;
+  Tab = 6;
+  Backspace = 7;
+  Enter = 8;
+  Space = 9;
+
+  Insert = 10;
+  Delete = 11;
+  Home = 12;
+  End = 13;
+  PageUp = 14;
+  PageDown = 15;
+
+  /// Either from the main row or from the numpad.
+  Num0 = 16;
+  /// Either from the main row or from the numpad.
+  Num1 = 17;
+  /// Either from the main row or from the numpad.
+  Num2 = 18;
+  /// Either from the main row or from the numpad.
+  Num3 = 19;
+  /// Either from the main row or from the numpad.
+  Num4 = 20;
+  /// Either from the main row or from the numpad.
+  Num5 = 21;
+  /// Either from the main row or from the numpad.
+  Num6 = 22;
+  /// Either from the main row or from the numpad.
+  Num7 = 23;
+  /// Either from the main row or from the numpad.
+  Num8 = 24;
+  /// Either from the main row or from the numpad.
+  Num9 = 25;
+
+  A = 26; // Used for cmd+A (select All)
+  B = 27;
+  C = 28; // |CMD COPY|
+  D = 29; // |CMD BOOKMARK|
+  E = 30; // |CMD SEARCH|
+  F = 31; // |CMD FIND firefox & chrome|
+  G = 32; // |CMD FIND chrome|
+  H = 33; // |CMD History|
+  I = 34; // italics
+  J = 35; // |CMD SEARCH firefox/DOWNLOAD chrome|
+  K = 37; // Used for ctrl+K (delete text after cursor)
+  L = 38;
+  M = 39;
+  N = 40;
+  O = 41; // |CMD OPEN|
+  P = 42; // |CMD PRINT|
+  Q = 43;
+  R = 44; // |CMD REFRESH|
+  S = 45; // |CMD SAVE|
+  T = 46; // |CMD TAB|
+  U = 47; // Used for ctrl+U (delete text before cursor)
+  V = 48;// |CMD PASTE|
+  W = 49; // Used for ctrl+W (delete previous word)
+  X = 50; // |CMD CUT|
+  Y = 51;
+  Z = 52; // |CMD UNDO|
+
+  // The function keys:
+  F1 = 53;
+  F2 = 54;
+  F3 = 55;
+  F4 = 56;
+  F5 = 57; // |CMD REFRESH|
+  F6 = 58;
+  F7 = 59;
+  F8 = 60;
+  F9 = 61;
+  F10 = 62;
+  F11 = 63;
+  F12 = 64;
+  F13 = 65;
+  F14 = 66;
+  F15 = 67;
+  F16 = 68;
+  F17 = 69;
+  F18 = 70;
+  F19 = 71;
+  F20 = 72;
+}
+
+message Key {
+  KeyType key = 1;
+  bool pressed = 2;
+  Modifiers modifiers = 3;
+}
+
+enum ButtonType {
+  BT_NONE = 0;
+  PRIMARY = 1;
+  SECONDARY = 2;
+  MIDDLE = 3;
+  EXTRA1 = 4;
+  EXTRA2 = 5;
+}
+
+message PointerButton {
+  Pos2 pos = 1;
+  ButtonType button = 2;
+  bool pressed = 3;
+  Modifiers modifiers = 4;
+}
+
+enum TouchPhase {
+  TP_NONE = 0;
+  START = 1;
+  MOVE = 2;
+  END = 3;
+  CANCEL = 4;
+}
+
+message Touch {
+  uint64 device_id = 1;
+  uint64 id = 2;
+  TouchPhase phase = 3;
+  Pos2 pos = 4;
+  float force = 5;
+}
+
+enum EventType {
+  ET_NONE = 0;
+  COPY = 2;
+  CUT = 3;
+  PASTE = 4;
+  TEXT = 5;
+  KEY = 6;
+  POINTER_MOVED = 7;
+  POINTER_BUTTON = 8;
+  POINTER_GONE = 9;
+  SCROLL = 10;
+  ZOOM = 11;
+  COMPOSITION_START = 12;
+  COMPOSITION_UPDATE = 13;
+  TOUCH = 14;
+}
+
+message Event {
+  EventType et = 1;
+  bool copy = 2;
+  bool cut = 3;
+  string paste = 4;
+  string text = 5;
+  Key key = 6;
+  Pos2 pointer_moved = 7;
+  PointerButton pointer_button = 8;
+  bool pointer_gone = 9;
+  Pos2 scroll = 10;
+  float zoom = 11;
+  bool composition_start = 12;
+  string composition_update = 13;
+  Touch touch = 14;
+}
+
+message Input {
+  Rect screen_rect = 1;
+  float pixels_per_point = 2;
+  uint32 max_texture_side = 3;
+  uint32 time = 4;
+  float predicted_dt = 5;
+  repeated  Event events = 6;
+  bool has_focus = 7;
+  Modifiers modifier = 8;
+}
