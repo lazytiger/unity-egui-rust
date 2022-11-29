@@ -1,11 +1,10 @@
 [package]
-name = "egui-unity"
+name = "uegui"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-[lib]
-crate-type = ["cdylib", "rlib"]
+
 
 [dependencies]
 egui = { features = ["bytemuck"], git = "https://github.com/lazytiger/egui.git", branch = "master" }
