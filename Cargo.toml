@@ -8,7 +8,7 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-egui = { version = "0.19", features = ["bytemuck"] }
+egui = { features = ["bytemuck"], git = "https://github.com/lazytiger/egui.git", branch = "master" }
 lazy_static = { version = "1.4" }
 protobuf = { version = "3.2" }
 bytemuck = { version = "1.12" }

@@ -8,23 +8,12 @@ message TextureId {
   uint64 user = 3;
 }
 
-message Color32 {
-  uint32 r = 1;
-  uint32 g = 2;
-  uint32 b = 3;
-  uint32 a = 4;
-}
-
-message Vertex {
-  Pos2 pos = 1;
-  Pos2 uv = 2;
-  Color32 color = 3;
-}
-
 message Mesh {
   TextureId texture_id = 1;
-  repeated uint32 indices = 2;
-  repeated Vertex vertices = 3;
+  bytes indices = 2;
+  uint32 index_count = 3;
+  bytes vertices = 4;
+  uint32 vertex_count = 5;
 }
 
 message ClippedPrimitive {

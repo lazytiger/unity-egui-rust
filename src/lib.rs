@@ -2,7 +2,7 @@ use std::default::Default;
 use std::ptr::slice_from_raw_parts;
 use std::sync::Mutex;
 
-use egui::{CentralPanel, Context, ImageData, Key, RawInput, TextureFilter};
+use egui::{CentralPanel, Context, ImageData, Key, Memory, RawInput, TextureFilter};
 use egui::epaint::Primitive;
 use egui::Event::PointerButton;
 use lazy_static::lazy_static;
@@ -11,20 +11,59 @@ use protobuf::Message;
 use crate::proto::common::{Pos2, Rect};
 use crate::proto::input::{ButtonType, Event, EventType, Input, KeyType, Modifiers};
 use crate::proto::output::{
-    ClippedPrimitive, Color32, Mesh, Output, Texture, TextureId, Vertex,
+    ClippedPrimitive, Mesh, Output, Texture, TextureId,
 };
 
 mod proto;
 
+#[derive(Default)]
+pub struct App {
+    pub age: u8,
+    pub name: String,
+}
+
 lazy_static! {
     pub static ref CONTEXT: Context = Context::default();
     pub static ref BUFFER: Mutex<Vec<u8>> = Mutex::new(Vec::new());
+    pub static ref APP:Mutex<App> = Mutex::new(App::default());
 }
 
 #[repr(C)]
 pub struct Buffer {
     pub data: *const u8,
     pub len: usize,
+}
+
+#[no_mangle]
+pub extern "C" fn init() {
+    *CONTEXT.memory() = Memory::default();
+
+    let mut fonts = egui::FontDefinitions::default();
+
+    // Install my own font (maybe supporting non-latin characters).
+    // .ttf and .otf files supported.
+    fonts.font_data.insert(
+        "my_font".to_owned(),
+        egui::FontData::from_static(include_bytes!(
+            "../fonts/SimSun.ttc"
+        )),
+    );
+
+    // Put my font first (highest priority) for proportional text:
+    fonts
+        .families
+        .entry(egui::FontFamily::Proportional)
+        .or_default()
+        .insert(0, "my_font".to_owned());
+
+    // Put my font as last fallback for monospace:
+    fonts
+        .families
+        .entry(egui::FontFamily::Monospace)
+        .or_default()
+        .push("my_font".to_owned());
+
+    CONTEXT.set_fonts(fonts);
 }
 
 #[no_mangle]
@@ -50,10 +89,101 @@ pub extern "C" fn begin(buffer: Buffer) {
     input.predicted_dt = pb_input.predicted_dt;
     for event in pb_input.events {
         if let Some(event) = event_from_pb_to_native(event) {
+            println!("event:{:?} added", event);
             input.events.push(event);
+        } else {
+            println!("event parse failed");
         }
     }
     CONTEXT.begin_frame(input);
+}
+
+fn key_type_from_pb_to_native(t: KeyType) -> Option<Key> {
+    match t {
+        KeyType::KT_NONE => None,
+        KeyType::ArrowDown => Some(Key::ArrowDown),
+        KeyType::ArrowLeft => Some(Key::ArrowLeft),
+        KeyType::ArrowRight => Some(Key::ArrowRight),
+        KeyType::ArrowUp => Some(Key::ArrowUp),
+        KeyType::Escape => Some(Key::Escape),
+        KeyType::Tab => Some(Key::Tab),
+        KeyType::Backspace => Some(Key::Backspace),
+        KeyType::Enter => Some(Key::Enter),
+        KeyType::Space => Some(Key::Space),
+        KeyType::Insert => Some(Key::Insert),
+        KeyType::Delete => Some(Key::Delete),
+        KeyType::Home => Some(Key::Home),
+        KeyType::End => Some(Key::End),
+        KeyType::PageUp => Some(Key::PageUp),
+        KeyType::PageDown => Some(Key::PageDown),
+        KeyType::Num0 => Some(Key::Num0),
+        KeyType::Num1 => Some(Key::Num1),
+        KeyType::Num2 => Some(Key::Num2),
+        KeyType::Num3 => Some(Key::Num3),
+        KeyType::Num4 => Some(Key::Num4),
+        KeyType::Num5 => Some(Key::Num5),
+        KeyType::Num6 => Some(Key::Num6),
+        KeyType::Num7 => Some(Key::Num7),
+        KeyType::Num8 => Some(Key::Num8),
+        KeyType::Num9 => Some(Key::Num9),
+        KeyType::A => Some(Key::A),
+        KeyType::B => Some(Key::B),
+        KeyType::C => Some(Key::C),
+        KeyType::D => Some(Key::D),
+        KeyType::E => Some(Key::E),
+        KeyType::F => Some(Key::F),
+        KeyType::G => Some(Key::G),
+        KeyType::H => Some(Key::H),
+        KeyType::I => Some(Key::I),
+        KeyType::J => Some(Key::J),
+        KeyType::K => Some(Key::K),
+        KeyType::L => Some(Key::L),
+        KeyType::M => Some(Key::M),
+        KeyType::N => Some(Key::N),
+        KeyType::O => Some(Key::O),
+        KeyType::P => Some(Key::P),
+        KeyType::Q => Some(Key::Q),
+        KeyType::R => Some(Key::R),
+        KeyType::S => Some(Key::S),
+        KeyType::T => Some(Key::T),
+        KeyType::U => Some(Key::U),
+        KeyType::V => Some(Key::V),
+        KeyType::W => Some(Key::W),
+        KeyType::X => Some(Key::X),
+        KeyType::Y => Some(Key::Y),
+        KeyType::Z => Some(Key::Z),
+        KeyType::F1 => Some(Key::F1),
+        KeyType::F2 => Some(Key::F2),
+        KeyType::F3 => Some(Key::F3),
+        KeyType::F4 => Some(Key::F4),
+        KeyType::F5 => Some(Key::F5),
+        KeyType::F6 => Some(Key::F6),
+        KeyType::F7 => Some(Key::F7),
+        KeyType::F8 => Some(Key::F8),
+        KeyType::F9 => Some(Key::F9),
+        KeyType::F10 => Some(Key::F10),
+        KeyType::F11 => Some(Key::F11),
+        KeyType::F12 => Some(Key::F12),
+        KeyType::F13 => Some(Key::F13),
+        KeyType::F14 => Some(Key::F14),
+        KeyType::F15 => Some(Key::F15),
+        KeyType::F16 => Some(Key::F16),
+        KeyType::F17 => Some(Key::F17),
+        KeyType::F18 => Some(Key::F18),
+        KeyType::F19 => Some(Key::F19),
+        KeyType::F20 => Some(Key::F20),
+    }
+}
+
+fn button_type_from_pb_to_native(bt: ButtonType) -> Option<egui::PointerButton> {
+    match bt {
+        ButtonType::BT_NONE => None,
+        ButtonType::PRIMARY => Some(egui::PointerButton::Primary),
+        ButtonType::SECONDARY => Some(egui::PointerButton::Secondary),
+        ButtonType::MIDDLE => Some(egui::PointerButton::Middle),
+        ButtonType::EXTRA1 => Some(egui::PointerButton::Extra1),
+        ButtonType::EXTRA2 => Some(egui::PointerButton::Extra2),
+    }
 }
 
 fn event_from_pb_to_native(e: Event) -> Option<egui::Event> {
@@ -71,87 +201,13 @@ fn event_from_pb_to_native(e: Event) -> Option<egui::Event> {
                 .key
                 .as_ref()
                 .map(|e| {
-                    e.key.enum_value().ok().map(|t| match t {
-                        KeyType::KT_NONE => None,
-                        KeyType::ArrowDown => Some(Key::ArrowDown),
-                        KeyType::ArrowLeft => Some(Key::ArrowLeft),
-                        KeyType::ArrowRight => Some(Key::ArrowRight),
-                        KeyType::ArrowUp => Some(Key::ArrowUp),
-                        KeyType::Escape => Some(Key::Escape),
-                        KeyType::Tab => Some(Key::Tab),
-                        KeyType::Backspace => Some(Key::Backspace),
-                        KeyType::Enter => Some(Key::Enter),
-                        KeyType::Space => Some(Key::Space),
-                        KeyType::Insert => Some(Key::Insert),
-                        KeyType::Delete => Some(Key::Delete),
-                        KeyType::Home => Some(Key::Home),
-                        KeyType::End => Some(Key::End),
-                        KeyType::PageUp => Some(Key::PageUp),
-                        KeyType::PageDown => Some(Key::PageDown),
-                        KeyType::Num0 => Some(Key::Num0),
-                        KeyType::Num1 => Some(Key::Num1),
-                        KeyType::Num2 => Some(Key::Num2),
-                        KeyType::Num3 => Some(Key::Num3),
-                        KeyType::Num4 => Some(Key::Num4),
-                        KeyType::Num5 => Some(Key::Num5),
-                        KeyType::Num6 => Some(Key::Num6),
-                        KeyType::Num7 => Some(Key::Num7),
-                        KeyType::Num8 => Some(Key::Num8),
-                        KeyType::Num9 => Some(Key::Num9),
-                        KeyType::A => Some(Key::A),
-                        KeyType::B => Some(Key::B),
-                        KeyType::C => Some(Key::C),
-                        KeyType::D => Some(Key::D),
-                        KeyType::E => Some(Key::E),
-                        KeyType::F => Some(Key::F),
-                        KeyType::G => Some(Key::G),
-                        KeyType::H => Some(Key::H),
-                        KeyType::I => Some(Key::I),
-                        KeyType::J => Some(Key::J),
-                        KeyType::K => Some(Key::K),
-                        KeyType::L => Some(Key::L),
-                        KeyType::M => Some(Key::M),
-                        KeyType::N => Some(Key::N),
-                        KeyType::O => Some(Key::O),
-                        KeyType::P => Some(Key::P),
-                        KeyType::Q => Some(Key::Q),
-                        KeyType::R => Some(Key::R),
-                        KeyType::S => Some(Key::S),
-                        KeyType::T => Some(Key::T),
-                        KeyType::U => Some(Key::U),
-                        KeyType::V => Some(Key::V),
-                        KeyType::W => Some(Key::W),
-                        KeyType::X => Some(Key::X),
-                        KeyType::Y => Some(Key::Y),
-                        KeyType::Z => Some(Key::Z),
-                        KeyType::F1 => Some(Key::F1),
-                        KeyType::F2 => Some(Key::F2),
-                        KeyType::F3 => Some(Key::F3),
-                        KeyType::F4 => Some(Key::F4),
-                        KeyType::F5 => Some(Key::F5),
-                        KeyType::F6 => Some(Key::F6),
-                        KeyType::F7 => Some(Key::F7),
-                        KeyType::F8 => Some(Key::F8),
-                        KeyType::F9 => Some(Key::F9),
-                        KeyType::F10 => Some(Key::F10),
-                        KeyType::F11 => Some(Key::F11),
-                        KeyType::F12 => Some(Key::F12),
-                        KeyType::F13 => Some(Key::F13),
-                        KeyType::F14 => Some(Key::F14),
-                        KeyType::F15 => Some(Key::F15),
-                        KeyType::F16 => Some(Key::F16),
-                        KeyType::F17 => Some(Key::F17),
-                        KeyType::F18 => Some(Key::F18),
-                        KeyType::F19 => Some(Key::F19),
-                        KeyType::F20 => Some(Key::F20),
-                    })
+                    e.key.enum_value().ok().map(key_type_from_pb_to_native).unwrap_or_default()
+                }).unwrap_or_default()
+                .map(|kt| egui::Event::Key {
+                    key: kt,
+                    pressed: e.key.pressed,
+                    modifiers: modifier_from_pb_to_native(&e.key.modifiers),
                 })
-                .map(|kt| kt.unwrap_or_default())
-                .unwrap_or_default().map(|kt| egui::Event::Key {
-                key: kt,
-                pressed: e.key.pressed,
-                modifiers: modifier_from_pb_to_native(&e.key.modifiers),
-            })
         }
         EventType::POINTER_MOVED => e
             .pointer_moved
@@ -165,14 +221,7 @@ fn event_from_pb_to_native(e: Event) -> Option<egui::Event> {
                 b.button
                     .enum_value()
                     .ok()
-                    .map(|bt| match bt {
-                        ButtonType::BT_NONE => None,
-                        ButtonType::PRIMARY => Some(egui::PointerButton::Primary),
-                        ButtonType::SECONDARY => Some(egui::PointerButton::Secondary),
-                        ButtonType::MIDDLE => Some(egui::PointerButton::Middle),
-                        ButtonType::EXTRA1 => Some(egui::PointerButton::Extra1),
-                        ButtonType::EXTRA2 => Some(egui::PointerButton::Extra2),
-                    })
+                    .map(button_type_from_pb_to_native)
                     .unwrap_or_default()
             })
             .unwrap_or_default()
@@ -255,81 +304,70 @@ pub extern "C" fn end() -> Buffer {
     let output = CONTEXT.end_frame();
     let mut pb_output = Output::default();
     pb_output.repaint_after = output.repaint_after.as_millis() as u32;
-    for (id, texture) in output.textures_delta.set {
-        let id = texture_id_from_native_to_pb(&id);
-        let mut pb_texture = Texture::default();
-        *pb_texture.id.mut_or_insert_default() = id;
-        pb_texture.texture_filter = match texture.filter {
-            TextureFilter::Nearest => 1,
-            TextureFilter::Linear => 2,
-        };
-        if let Some(pos) = texture.pos {
-            pb_texture.pos_x = pos[0] as u32;
-            pb_texture.pos_y = pos[1] as u32;
-        }
-        let image = pb_texture.image.mut_or_insert_default();
-        match texture.image {
-            ImageData::Color(color) => {
-                image.width = color.size[0] as u32;
-                image.height = color.size[1] as u32;
-                image.data = bytemuck::cast_slice(color.pixels.as_slice()).to_vec();
+    if pb_output.repaint_after == 0 {
+        for (id, texture) in output.textures_delta.set {
+            let id = texture_id_from_native_to_pb(&id);
+            let mut pb_texture = Texture::default();
+            *pb_texture.id.mut_or_insert_default() = id;
+            pb_texture.texture_filter = match texture.options.minification {
+                TextureFilter::Nearest => 1,
+                TextureFilter::Linear => 2,
+            };
+            if let Some(pos) = texture.pos {
+                pb_texture.pos_x = pos[0] as u32;
+                pb_texture.pos_y = pos[1] as u32;
             }
-            ImageData::Font(font) => {
-                image.width = font.size[0] as u32;
-                image.height = font.size[1] as u32;
-                image.data = font.srgba_pixels(1.0).flat_map(|a| a.to_array()).collect();
-            }
-        }
-        pb_output.texture_set.push(pb_texture);
-    }
-    pb_output.texture_free = output
-        .textures_delta
-        .free
-        .iter()
-        .map(texture_id_from_native_to_pb)
-        .collect();
-    let clipped = CONTEXT.tessellate(output.shapes);
-    for cp in clipped {
-        let mut pb_cp = ClippedPrimitive::default();
-        *pb_cp
-            .clip_rect
-            .mut_or_insert_default() =
-            rect_from_native_to_pb(cp.clip_rect);
-        match cp.primitive {
-            Primitive::Mesh(mesh) => {
-                pb_cp.tag = 1;
-                let mut pb_mesh = Mesh::default();
-                pb_mesh.indices = mesh.indices;
-                *pb_mesh
-                    .texture_id
-                    .mut_or_insert_default() =
-                    texture_id_from_native_to_pb(&mesh.texture_id);
-                for v in mesh.vertices {
-                    let mut pbv = Vertex::default();
-                    *pbv.pos.mut_or_insert_default() = Pos2 {
-                        x: v.pos.x,
-                        y: v.pos.y,
-                        ..Default::default()
-                    };
-                    *pbv.uv.mut_or_insert_default() = Pos2 {
-                        x: v.uv.x,
-                        y: v.uv.y,
-                        ..Default::default()
-                    };
-                    *pbv.color.mut_or_insert_default() = Color32 {
-                        r: v.color[0] as u32,
-                        g: v.color[1] as u32,
-                        b: v.color[2] as u32,
-                        a: v.color[3] as u32,
-                        ..Default::default()
-                    };
+            let image = pb_texture.image.mut_or_insert_default();
+            match texture.image {
+                ImageData::Color(color) => {
+                    image.width = color.size[0] as u32;
+                    image.height = color.size[1] as u32;
+                    image.data = bytemuck::cast_slice(color.pixels.as_slice()).to_vec();
+                }
+                ImageData::Font(font) => {
+                    image.width = font.size[0] as u32;
+                    image.height = font.size[1] as u32;
+                    image.data = font.srgba_pixels(None).flat_map(|a| a.to_array()).collect();
                 }
             }
-            Primitive::Callback(_) => {
-                unimplemented!("callback not supported")
-            }
+            pb_output.texture_set.push(pb_texture);
         }
-        pb_output.primitives.push(pb_cp);
+        pb_output.texture_free = output
+            .textures_delta
+            .free
+            .iter()
+            .map(texture_id_from_native_to_pb)
+            .collect();
+        let clipped = CONTEXT.tessellate(output.shapes);
+        for cp in clipped {
+            let mut pb_cp = ClippedPrimitive::default();
+            *pb_cp
+                .clip_rect
+                .mut_or_insert_default() =
+                rect_from_native_to_pb(cp.clip_rect);
+            match cp.primitive {
+                Primitive::Mesh(mesh) => {
+                    pb_cp.tag = 1;
+                    let mut pb_mesh = Mesh::default();
+                    *pb_mesh
+                        .texture_id
+                        .mut_or_insert_default() =
+                        texture_id_from_native_to_pb(&mesh.texture_id);
+                    pb_mesh.index_count = mesh.indices.len() as u32;
+                    pb_mesh.indices = bytemuck::cast_slice(mesh.indices.as_slice()).to_vec();
+                    pb_mesh.vertex_count = mesh.vertices.len() as u32;
+                    //println!("vertex_count:{}, index_count:{}", pb_mesh.vertex_count, pb_mesh.index_count);
+                    //let v = mesh.vertices[0];
+                    //println!("[{},{}][{},{},{},{}][{},{}]", v.pos.x, v.pos.y, v.color.r(), v.color.g(), v.color.b(), v.color.a(), v.uv.x, v.uv.y);
+                    pb_mesh.vertices = bytemuck::cast_slice(mesh.vertices.as_slice()).to_vec();
+                    *pb_cp.mesh.mut_or_insert_default() = pb_mesh;
+                }
+                Primitive::Callback(_) => {
+                    unimplemented!("callback not supported")
+                }
+            }
+            pb_output.primitives.push(pb_cp);
+        }
     }
     let mut buffer = BUFFER.lock().unwrap();
     buffer.clear();
@@ -346,7 +384,18 @@ pub extern "C" fn update() {
 }
 
 pub fn native_update(context: &Context) {
+    let mut app = APP.lock().unwrap();
     CentralPanel::default().show(context, |ui| {
         ui.label("hello, world");
+        ui.heading("My egui Application");
+        ui.horizontal(|ui| {
+            ui.label("Your name: ");
+            ui.text_edit_singleline(&mut app.name);
+        });
+        ui.add(egui::Slider::new(&mut app.age, 0..=120).text("age"));
+        if ui.button("Click each year").clicked() {
+            app.age += 1;
+        }
+        ui.label(format!("Hello '{}', age {}", app.name, app.age));
     });
 }

@@ -184,352 +184,19 @@ impl ::protobuf::reflect::ProtobufValue for TextureId {
 }
 
 #[derive(PartialEq,Clone,Default,Debug)]
-// @@protoc_insertion_point(message:proto.Color32)
-pub struct Color32 {
-    // message fields
-    // @@protoc_insertion_point(field:proto.Color32.r)
-    pub r: u32,
-    // @@protoc_insertion_point(field:proto.Color32.g)
-    pub g: u32,
-    // @@protoc_insertion_point(field:proto.Color32.b)
-    pub b: u32,
-    // @@protoc_insertion_point(field:proto.Color32.a)
-    pub a: u32,
-    // special fields
-    // @@protoc_insertion_point(special_field:proto.Color32.special_fields)
-    pub special_fields: ::protobuf::SpecialFields,
-}
-
-impl<'a> ::std::default::Default for &'a Color32 {
-    fn default() -> &'a Color32 {
-        <Color32 as ::protobuf::Message>::default_instance()
-    }
-}
-
-impl Color32 {
-    pub fn new() -> Color32 {
-        ::std::default::Default::default()
-    }
-
-    fn generated_message_descriptor_data() -> ::protobuf::reflect::GeneratedMessageDescriptorData {
-        let mut fields = ::std::vec::Vec::with_capacity(4);
-        let mut oneofs = ::std::vec::Vec::with_capacity(0);
-        fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
-            "r",
-            |m: &Color32| { &m.r },
-            |m: &mut Color32| { &mut m.r },
-        ));
-        fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
-            "g",
-            |m: &Color32| { &m.g },
-            |m: &mut Color32| { &mut m.g },
-        ));
-        fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
-            "b",
-            |m: &Color32| { &m.b },
-            |m: &mut Color32| { &mut m.b },
-        ));
-        fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
-            "a",
-            |m: &Color32| { &m.a },
-            |m: &mut Color32| { &mut m.a },
-        ));
-        ::protobuf::reflect::GeneratedMessageDescriptorData::new_2::<Color32>(
-            "Color32",
-            fields,
-            oneofs,
-        )
-    }
-}
-
-impl ::protobuf::Message for Color32 {
-    const NAME: &'static str = "Color32";
-
-    fn is_initialized(&self) -> bool {
-        true
-    }
-
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream<'_>) -> ::protobuf::Result<()> {
-        while let Some(tag) = is.read_raw_tag_or_eof()? {
-            match tag {
-                8 => {
-                    self.r = is.read_uint32()?;
-                },
-                16 => {
-                    self.g = is.read_uint32()?;
-                },
-                24 => {
-                    self.b = is.read_uint32()?;
-                },
-                32 => {
-                    self.a = is.read_uint32()?;
-                },
-                tag => {
-                    ::protobuf::rt::read_unknown_or_skip_group(tag, is, self.special_fields.mut_unknown_fields())?;
-                },
-            };
-        }
-        ::std::result::Result::Ok(())
-    }
-
-    // Compute sizes of nested messages
-    #[allow(unused_variables)]
-    fn compute_size(&self) -> u64 {
-        let mut my_size = 0;
-        if self.r != 0 {
-            my_size += ::protobuf::rt::uint32_size(1, self.r);
-        }
-        if self.g != 0 {
-            my_size += ::protobuf::rt::uint32_size(2, self.g);
-        }
-        if self.b != 0 {
-            my_size += ::protobuf::rt::uint32_size(3, self.b);
-        }
-        if self.a != 0 {
-            my_size += ::protobuf::rt::uint32_size(4, self.a);
-        }
-        my_size += ::protobuf::rt::unknown_fields_size(self.special_fields.unknown_fields());
-        self.special_fields.cached_size().set(my_size as u32);
-        my_size
-    }
-
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream<'_>) -> ::protobuf::Result<()> {
-        if self.r != 0 {
-            os.write_uint32(1, self.r)?;
-        }
-        if self.g != 0 {
-            os.write_uint32(2, self.g)?;
-        }
-        if self.b != 0 {
-            os.write_uint32(3, self.b)?;
-        }
-        if self.a != 0 {
-            os.write_uint32(4, self.a)?;
-        }
-        os.write_unknown_fields(self.special_fields.unknown_fields())?;
-        ::std::result::Result::Ok(())
-    }
-
-    fn special_fields(&self) -> &::protobuf::SpecialFields {
-        &self.special_fields
-    }
-
-    fn mut_special_fields(&mut self) -> &mut ::protobuf::SpecialFields {
-        &mut self.special_fields
-    }
-
-    fn new() -> Color32 {
-        Color32::new()
-    }
-
-    fn clear(&mut self) {
-        self.r = 0;
-        self.g = 0;
-        self.b = 0;
-        self.a = 0;
-        self.special_fields.clear();
-    }
-
-    fn default_instance() -> &'static Color32 {
-        static instance: Color32 = Color32 {
-            r: 0,
-            g: 0,
-            b: 0,
-            a: 0,
-            special_fields: ::protobuf::SpecialFields::new(),
-        };
-        &instance
-    }
-}
-
-impl ::protobuf::MessageFull for Color32 {
-    fn descriptor() -> ::protobuf::reflect::MessageDescriptor {
-        static descriptor: ::protobuf::rt::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::rt::Lazy::new();
-        descriptor.get(|| file_descriptor().message_by_package_relative_name("Color32").unwrap()).clone()
-    }
-}
-
-impl ::std::fmt::Display for Color32 {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        ::protobuf::text_format::fmt(self, f)
-    }
-}
-
-impl ::protobuf::reflect::ProtobufValue for Color32 {
-    type RuntimeType = ::protobuf::reflect::rt::RuntimeTypeMessage<Self>;
-}
-
-#[derive(PartialEq,Clone,Default,Debug)]
-// @@protoc_insertion_point(message:proto.Vertex)
-pub struct Vertex {
-    // message fields
-    // @@protoc_insertion_point(field:proto.Vertex.pos)
-    pub pos: ::protobuf::MessageField<super::common::Pos2>,
-    // @@protoc_insertion_point(field:proto.Vertex.uv)
-    pub uv: ::protobuf::MessageField<super::common::Pos2>,
-    // @@protoc_insertion_point(field:proto.Vertex.color)
-    pub color: ::protobuf::MessageField<Color32>,
-    // special fields
-    // @@protoc_insertion_point(special_field:proto.Vertex.special_fields)
-    pub special_fields: ::protobuf::SpecialFields,
-}
-
-impl<'a> ::std::default::Default for &'a Vertex {
-    fn default() -> &'a Vertex {
-        <Vertex as ::protobuf::Message>::default_instance()
-    }
-}
-
-impl Vertex {
-    pub fn new() -> Vertex {
-        ::std::default::Default::default()
-    }
-
-    fn generated_message_descriptor_data() -> ::protobuf::reflect::GeneratedMessageDescriptorData {
-        let mut fields = ::std::vec::Vec::with_capacity(3);
-        let mut oneofs = ::std::vec::Vec::with_capacity(0);
-        fields.push(::protobuf::reflect::rt::v2::make_message_field_accessor::<_, super::common::Pos2>(
-            "pos",
-            |m: &Vertex| { &m.pos },
-            |m: &mut Vertex| { &mut m.pos },
-        ));
-        fields.push(::protobuf::reflect::rt::v2::make_message_field_accessor::<_, super::common::Pos2>(
-            "uv",
-            |m: &Vertex| { &m.uv },
-            |m: &mut Vertex| { &mut m.uv },
-        ));
-        fields.push(::protobuf::reflect::rt::v2::make_message_field_accessor::<_, Color32>(
-            "color",
-            |m: &Vertex| { &m.color },
-            |m: &mut Vertex| { &mut m.color },
-        ));
-        ::protobuf::reflect::GeneratedMessageDescriptorData::new_2::<Vertex>(
-            "Vertex",
-            fields,
-            oneofs,
-        )
-    }
-}
-
-impl ::protobuf::Message for Vertex {
-    const NAME: &'static str = "Vertex";
-
-    fn is_initialized(&self) -> bool {
-        true
-    }
-
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream<'_>) -> ::protobuf::Result<()> {
-        while let Some(tag) = is.read_raw_tag_or_eof()? {
-            match tag {
-                10 => {
-                    ::protobuf::rt::read_singular_message_into_field(is, &mut self.pos)?;
-                },
-                18 => {
-                    ::protobuf::rt::read_singular_message_into_field(is, &mut self.uv)?;
-                },
-                26 => {
-                    ::protobuf::rt::read_singular_message_into_field(is, &mut self.color)?;
-                },
-                tag => {
-                    ::protobuf::rt::read_unknown_or_skip_group(tag, is, self.special_fields.mut_unknown_fields())?;
-                },
-            };
-        }
-        ::std::result::Result::Ok(())
-    }
-
-    // Compute sizes of nested messages
-    #[allow(unused_variables)]
-    fn compute_size(&self) -> u64 {
-        let mut my_size = 0;
-        if let Some(v) = self.pos.as_ref() {
-            let len = v.compute_size();
-            my_size += 1 + ::protobuf::rt::compute_raw_varint64_size(len) + len;
-        }
-        if let Some(v) = self.uv.as_ref() {
-            let len = v.compute_size();
-            my_size += 1 + ::protobuf::rt::compute_raw_varint64_size(len) + len;
-        }
-        if let Some(v) = self.color.as_ref() {
-            let len = v.compute_size();
-            my_size += 1 + ::protobuf::rt::compute_raw_varint64_size(len) + len;
-        }
-        my_size += ::protobuf::rt::unknown_fields_size(self.special_fields.unknown_fields());
-        self.special_fields.cached_size().set(my_size as u32);
-        my_size
-    }
-
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream<'_>) -> ::protobuf::Result<()> {
-        if let Some(v) = self.pos.as_ref() {
-            ::protobuf::rt::write_message_field_with_cached_size(1, v, os)?;
-        }
-        if let Some(v) = self.uv.as_ref() {
-            ::protobuf::rt::write_message_field_with_cached_size(2, v, os)?;
-        }
-        if let Some(v) = self.color.as_ref() {
-            ::protobuf::rt::write_message_field_with_cached_size(3, v, os)?;
-        }
-        os.write_unknown_fields(self.special_fields.unknown_fields())?;
-        ::std::result::Result::Ok(())
-    }
-
-    fn special_fields(&self) -> &::protobuf::SpecialFields {
-        &self.special_fields
-    }
-
-    fn mut_special_fields(&mut self) -> &mut ::protobuf::SpecialFields {
-        &mut self.special_fields
-    }
-
-    fn new() -> Vertex {
-        Vertex::new()
-    }
-
-    fn clear(&mut self) {
-        self.pos.clear();
-        self.uv.clear();
-        self.color.clear();
-        self.special_fields.clear();
-    }
-
-    fn default_instance() -> &'static Vertex {
-        static instance: Vertex = Vertex {
-            pos: ::protobuf::MessageField::none(),
-            uv: ::protobuf::MessageField::none(),
-            color: ::protobuf::MessageField::none(),
-            special_fields: ::protobuf::SpecialFields::new(),
-        };
-        &instance
-    }
-}
-
-impl ::protobuf::MessageFull for Vertex {
-    fn descriptor() -> ::protobuf::reflect::MessageDescriptor {
-        static descriptor: ::protobuf::rt::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::rt::Lazy::new();
-        descriptor.get(|| file_descriptor().message_by_package_relative_name("Vertex").unwrap()).clone()
-    }
-}
-
-impl ::std::fmt::Display for Vertex {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        ::protobuf::text_format::fmt(self, f)
-    }
-}
-
-impl ::protobuf::reflect::ProtobufValue for Vertex {
-    type RuntimeType = ::protobuf::reflect::rt::RuntimeTypeMessage<Self>;
-}
-
-#[derive(PartialEq,Clone,Default,Debug)]
 // @@protoc_insertion_point(message:proto.Mesh)
 pub struct Mesh {
     // message fields
     // @@protoc_insertion_point(field:proto.Mesh.texture_id)
     pub texture_id: ::protobuf::MessageField<TextureId>,
     // @@protoc_insertion_point(field:proto.Mesh.indices)
-    pub indices: ::std::vec::Vec<u32>,
+    pub indices: ::std::vec::Vec<u8>,
+    // @@protoc_insertion_point(field:proto.Mesh.index_count)
+    pub index_count: u32,
     // @@protoc_insertion_point(field:proto.Mesh.vertices)
-    pub vertices: ::std::vec::Vec<Vertex>,
+    pub vertices: ::std::vec::Vec<u8>,
+    // @@protoc_insertion_point(field:proto.Mesh.vertex_count)
+    pub vertex_count: u32,
     // special fields
     // @@protoc_insertion_point(special_field:proto.Mesh.special_fields)
     pub special_fields: ::protobuf::SpecialFields,
@@ -547,22 +214,32 @@ impl Mesh {
     }
 
     fn generated_message_descriptor_data() -> ::protobuf::reflect::GeneratedMessageDescriptorData {
-        let mut fields = ::std::vec::Vec::with_capacity(3);
+        let mut fields = ::std::vec::Vec::with_capacity(5);
         let mut oneofs = ::std::vec::Vec::with_capacity(0);
         fields.push(::protobuf::reflect::rt::v2::make_message_field_accessor::<_, TextureId>(
             "texture_id",
             |m: &Mesh| { &m.texture_id },
             |m: &mut Mesh| { &mut m.texture_id },
         ));
-        fields.push(::protobuf::reflect::rt::v2::make_vec_simpler_accessor::<_, _>(
+        fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
             "indices",
             |m: &Mesh| { &m.indices },
             |m: &mut Mesh| { &mut m.indices },
         ));
-        fields.push(::protobuf::reflect::rt::v2::make_vec_simpler_accessor::<_, _>(
+        fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
+            "index_count",
+            |m: &Mesh| { &m.index_count },
+            |m: &mut Mesh| { &mut m.index_count },
+        ));
+        fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
             "vertices",
             |m: &Mesh| { &m.vertices },
             |m: &mut Mesh| { &mut m.vertices },
+        ));
+        fields.push(::protobuf::reflect::rt::v2::make_simpler_field_accessor::<_, _>(
+            "vertex_count",
+            |m: &Mesh| { &m.vertex_count },
+            |m: &mut Mesh| { &mut m.vertex_count },
         ));
         ::protobuf::reflect::GeneratedMessageDescriptorData::new_2::<Mesh>(
             "Mesh",
@@ -586,13 +263,16 @@ impl ::protobuf::Message for Mesh {
                     ::protobuf::rt::read_singular_message_into_field(is, &mut self.texture_id)?;
                 },
                 18 => {
-                    is.read_repeated_packed_uint32_into(&mut self.indices)?;
+                    self.indices = is.read_bytes()?;
                 },
-                16 => {
-                    self.indices.push(is.read_uint32()?);
+                24 => {
+                    self.index_count = is.read_uint32()?;
                 },
-                26 => {
-                    self.vertices.push(is.read_message()?);
+                34 => {
+                    self.vertices = is.read_bytes()?;
+                },
+                40 => {
+                    self.vertex_count = is.read_uint32()?;
                 },
                 tag => {
                     ::protobuf::rt::read_unknown_or_skip_group(tag, is, self.special_fields.mut_unknown_fields())?;
@@ -610,13 +290,18 @@ impl ::protobuf::Message for Mesh {
             let len = v.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint64_size(len) + len;
         }
-        for value in &self.indices {
-            my_size += ::protobuf::rt::uint32_size(2, *value);
-        };
-        for value in &self.vertices {
-            let len = value.compute_size();
-            my_size += 1 + ::protobuf::rt::compute_raw_varint64_size(len) + len;
-        };
+        if !self.indices.is_empty() {
+            my_size += ::protobuf::rt::bytes_size(2, &self.indices);
+        }
+        if self.index_count != 0 {
+            my_size += ::protobuf::rt::uint32_size(3, self.index_count);
+        }
+        if !self.vertices.is_empty() {
+            my_size += ::protobuf::rt::bytes_size(4, &self.vertices);
+        }
+        if self.vertex_count != 0 {
+            my_size += ::protobuf::rt::uint32_size(5, self.vertex_count);
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.special_fields.unknown_fields());
         self.special_fields.cached_size().set(my_size as u32);
         my_size
@@ -626,12 +311,18 @@ impl ::protobuf::Message for Mesh {
         if let Some(v) = self.texture_id.as_ref() {
             ::protobuf::rt::write_message_field_with_cached_size(1, v, os)?;
         }
-        for v in &self.indices {
-            os.write_uint32(2, *v)?;
-        };
-        for v in &self.vertices {
-            ::protobuf::rt::write_message_field_with_cached_size(3, v, os)?;
-        };
+        if !self.indices.is_empty() {
+            os.write_bytes(2, &self.indices)?;
+        }
+        if self.index_count != 0 {
+            os.write_uint32(3, self.index_count)?;
+        }
+        if !self.vertices.is_empty() {
+            os.write_bytes(4, &self.vertices)?;
+        }
+        if self.vertex_count != 0 {
+            os.write_uint32(5, self.vertex_count)?;
+        }
         os.write_unknown_fields(self.special_fields.unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -651,7 +342,9 @@ impl ::protobuf::Message for Mesh {
     fn clear(&mut self) {
         self.texture_id.clear();
         self.indices.clear();
+        self.index_count = 0;
         self.vertices.clear();
+        self.vertex_count = 0;
         self.special_fields.clear();
     }
 
@@ -659,7 +352,9 @@ impl ::protobuf::Message for Mesh {
         static instance: Mesh = Mesh {
             texture_id: ::protobuf::MessageField::none(),
             indices: ::std::vec::Vec::new(),
+            index_count: 0,
             vertices: ::std::vec::Vec::new(),
+            vertex_count: 0,
             special_fields: ::protobuf::SpecialFields::new(),
         };
         &instance
@@ -1380,118 +1075,98 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \n\x0coutput.proto\x12\x05proto\x1a\x0ccommon.proto\"K\n\tTextureId\x12\
     \x10\n\x03tag\x18\x01\x20\x01(\rR\x03tag\x12\x18\n\x07managed\x18\x02\
     \x20\x01(\x04R\x07managed\x12\x12\n\x04user\x18\x03\x20\x01(\x04R\x04use\
-    r\"A\n\x07Color32\x12\x0c\n\x01r\x18\x01\x20\x01(\rR\x01r\x12\x0c\n\x01g\
-    \x18\x02\x20\x01(\rR\x01g\x12\x0c\n\x01b\x18\x03\x20\x01(\rR\x01b\x12\
-    \x0c\n\x01a\x18\x04\x20\x01(\rR\x01a\"j\n\x06Vertex\x12\x1d\n\x03pos\x18\
-    \x01\x20\x01(\x0b2\x0b.proto.Pos2R\x03pos\x12\x1b\n\x02uv\x18\x02\x20\
-    \x01(\x0b2\x0b.proto.Pos2R\x02uv\x12$\n\x05color\x18\x03\x20\x01(\x0b2\
-    \x0e.proto.Color32R\x05color\"|\n\x04Mesh\x12/\n\ntexture_id\x18\x01\x20\
-    \x01(\x0b2\x10.proto.TextureIdR\ttextureId\x12\x18\n\x07indices\x18\x02\
-    \x20\x03(\rR\x07indices\x12)\n\x08vertices\x18\x03\x20\x03(\x0b2\r.proto\
-    .VertexR\x08vertices\"o\n\x10ClippedPrimitive\x12(\n\tclip_rect\x18\x01\
-    \x20\x01(\x0b2\x0b.proto.RectR\x08clipRect\x12\x10\n\x03tag\x18\x02\x20\
-    \x01(\rR\x03tag\x12\x1f\n\x04mesh\x18\x03\x20\x01(\x0b2\x0b.proto.MeshR\
-    \x04mesh\"I\n\x05Image\x12\x14\n\x05width\x18\x01\x20\x01(\rR\x05width\
-    \x12\x16\n\x06height\x18\x02\x20\x01(\rR\x06height\x12\x12\n\x04data\x18\
-    \x03\x20\x01(\x0cR\x04data\"\xa0\x01\n\x07Texture\x12\x20\n\x02id\x18\
-    \x01\x20\x01(\x0b2\x10.proto.TextureIdR\x02id\x12\x13\n\x05pos_x\x18\x02\
-    \x20\x01(\rR\x04posX\x12\x13\n\x05pos_y\x18\x03\x20\x01(\rR\x04posY\x12\
-    \"\n\x05image\x18\x04\x20\x01(\x0b2\x0c.proto.ImageR\x05image\x12%\n\x0e\
-    texture_filter\x18\x05\x20\x01(\rR\rtextureFilter\"\xcc\x01\n\x06Output\
-    \x127\n\nprimitives\x18\x01\x20\x03(\x0b2\x17.proto.ClippedPrimitiveR\np\
-    rimitives\x12/\n\x0btexture_set\x18\x02\x20\x03(\x0b2\x0e.proto.TextureR\
-    \ntextureSet\x123\n\x0ctexture_free\x18\x03\x20\x03(\x0b2\x10.proto.Text\
-    ureIdR\x0btextureFree\x12#\n\rrepaint_after\x18\x04\x20\x01(\rR\x0crepai\
-    ntAfterJ\xb1\x0e\n\x06\x12\x04\0\06\x01\n\x08\n\x01\x0c\x12\x03\0\0\x12\
-    \n\x08\n\x01\x02\x12\x03\x01\0\x0e\n\t\n\x02\x03\0\x12\x03\x02\0\x16\n\n\
-    \n\x02\x04\0\x12\x04\x04\0\x08\x01\n\n\n\x03\x04\0\x01\x12\x03\x04\x08\
-    \x11\n\x0b\n\x04\x04\0\x02\0\x12\x03\x05\x02\x11\n\x0c\n\x05\x04\0\x02\0\
-    \x05\x12\x03\x05\x02\x08\n\x0c\n\x05\x04\0\x02\0\x01\x12\x03\x05\t\x0c\n\
-    \x0c\n\x05\x04\0\x02\0\x03\x12\x03\x05\x0f\x10\n\x0b\n\x04\x04\0\x02\x01\
-    \x12\x03\x06\x02\x15\n\x0c\n\x05\x04\0\x02\x01\x05\x12\x03\x06\x02\x08\n\
-    \x0c\n\x05\x04\0\x02\x01\x01\x12\x03\x06\t\x10\n\x0c\n\x05\x04\0\x02\x01\
-    \x03\x12\x03\x06\x13\x14\n\x0b\n\x04\x04\0\x02\x02\x12\x03\x07\x02\x12\n\
-    \x0c\n\x05\x04\0\x02\x02\x05\x12\x03\x07\x02\x08\n\x0c\n\x05\x04\0\x02\
-    \x02\x01\x12\x03\x07\t\r\n\x0c\n\x05\x04\0\x02\x02\x03\x12\x03\x07\x10\
-    \x11\n\n\n\x02\x04\x01\x12\x04\n\0\x0f\x01\n\n\n\x03\x04\x01\x01\x12\x03\
-    \n\x08\x0f\n\x0b\n\x04\x04\x01\x02\0\x12\x03\x0b\x02\x0f\n\x0c\n\x05\x04\
-    \x01\x02\0\x05\x12\x03\x0b\x02\x08\n\x0c\n\x05\x04\x01\x02\0\x01\x12\x03\
-    \x0b\t\n\n\x0c\n\x05\x04\x01\x02\0\x03\x12\x03\x0b\r\x0e\n\x0b\n\x04\x04\
-    \x01\x02\x01\x12\x03\x0c\x02\x0f\n\x0c\n\x05\x04\x01\x02\x01\x05\x12\x03\
-    \x0c\x02\x08\n\x0c\n\x05\x04\x01\x02\x01\x01\x12\x03\x0c\t\n\n\x0c\n\x05\
-    \x04\x01\x02\x01\x03\x12\x03\x0c\r\x0e\n\x0b\n\x04\x04\x01\x02\x02\x12\
-    \x03\r\x02\x0f\n\x0c\n\x05\x04\x01\x02\x02\x05\x12\x03\r\x02\x08\n\x0c\n\
-    \x05\x04\x01\x02\x02\x01\x12\x03\r\t\n\n\x0c\n\x05\x04\x01\x02\x02\x03\
-    \x12\x03\r\r\x0e\n\x0b\n\x04\x04\x01\x02\x03\x12\x03\x0e\x02\x0f\n\x0c\n\
-    \x05\x04\x01\x02\x03\x05\x12\x03\x0e\x02\x08\n\x0c\n\x05\x04\x01\x02\x03\
-    \x01\x12\x03\x0e\t\n\n\x0c\n\x05\x04\x01\x02\x03\x03\x12\x03\x0e\r\x0e\n\
-    \n\n\x02\x04\x02\x12\x04\x11\0\x15\x01\n\n\n\x03\x04\x02\x01\x12\x03\x11\
-    \x08\x0e\n\x0b\n\x04\x04\x02\x02\0\x12\x03\x12\x02\x0f\n\x0c\n\x05\x04\
-    \x02\x02\0\x06\x12\x03\x12\x02\x06\n\x0c\n\x05\x04\x02\x02\0\x01\x12\x03\
-    \x12\x07\n\n\x0c\n\x05\x04\x02\x02\0\x03\x12\x03\x12\r\x0e\n\x0b\n\x04\
-    \x04\x02\x02\x01\x12\x03\x13\x02\x0e\n\x0c\n\x05\x04\x02\x02\x01\x06\x12\
-    \x03\x13\x02\x06\n\x0c\n\x05\x04\x02\x02\x01\x01\x12\x03\x13\x07\t\n\x0c\
-    \n\x05\x04\x02\x02\x01\x03\x12\x03\x13\x0c\r\n\x0b\n\x04\x04\x02\x02\x02\
-    \x12\x03\x14\x02\x14\n\x0c\n\x05\x04\x02\x02\x02\x06\x12\x03\x14\x02\t\n\
-    \x0c\n\x05\x04\x02\x02\x02\x01\x12\x03\x14\n\x0f\n\x0c\n\x05\x04\x02\x02\
-    \x02\x03\x12\x03\x14\x12\x13\n\n\n\x02\x04\x03\x12\x04\x17\0\x1b\x01\n\n\
-    \n\x03\x04\x03\x01\x12\x03\x17\x08\x0c\n\x0b\n\x04\x04\x03\x02\0\x12\x03\
-    \x18\x02\x1b\n\x0c\n\x05\x04\x03\x02\0\x06\x12\x03\x18\x02\x0b\n\x0c\n\
-    \x05\x04\x03\x02\0\x01\x12\x03\x18\x0c\x16\n\x0c\n\x05\x04\x03\x02\0\x03\
-    \x12\x03\x18\x19\x1a\n\x0b\n\x04\x04\x03\x02\x01\x12\x03\x19\x02\x1e\n\
-    \x0c\n\x05\x04\x03\x02\x01\x04\x12\x03\x19\x02\n\n\x0c\n\x05\x04\x03\x02\
-    \x01\x05\x12\x03\x19\x0b\x11\n\x0c\n\x05\x04\x03\x02\x01\x01\x12\x03\x19\
-    \x12\x19\n\x0c\n\x05\x04\x03\x02\x01\x03\x12\x03\x19\x1c\x1d\n\x0b\n\x04\
-    \x04\x03\x02\x02\x12\x03\x1a\x02\x1f\n\x0c\n\x05\x04\x03\x02\x02\x04\x12\
-    \x03\x1a\x02\n\n\x0c\n\x05\x04\x03\x02\x02\x06\x12\x03\x1a\x0b\x11\n\x0c\
-    \n\x05\x04\x03\x02\x02\x01\x12\x03\x1a\x12\x1a\n\x0c\n\x05\x04\x03\x02\
-    \x02\x03\x12\x03\x1a\x1d\x1e\n\n\n\x02\x04\x04\x12\x04\x1d\0!\x01\n\n\n\
-    \x03\x04\x04\x01\x12\x03\x1d\x08\x18\n\x0b\n\x04\x04\x04\x02\0\x12\x03\
-    \x1e\x02\x15\n\x0c\n\x05\x04\x04\x02\0\x06\x12\x03\x1e\x02\x06\n\x0c\n\
-    \x05\x04\x04\x02\0\x01\x12\x03\x1e\x07\x10\n\x0c\n\x05\x04\x04\x02\0\x03\
-    \x12\x03\x1e\x13\x14\n\x0b\n\x04\x04\x04\x02\x01\x12\x03\x1f\x02\x11\n\
-    \x0c\n\x05\x04\x04\x02\x01\x05\x12\x03\x1f\x02\x08\n\x0c\n\x05\x04\x04\
-    \x02\x01\x01\x12\x03\x1f\t\x0c\n\x0c\n\x05\x04\x04\x02\x01\x03\x12\x03\
-    \x1f\x0f\x10\n\x0b\n\x04\x04\x04\x02\x02\x12\x03\x20\x02\x10\n\x0c\n\x05\
-    \x04\x04\x02\x02\x06\x12\x03\x20\x02\x06\n\x0c\n\x05\x04\x04\x02\x02\x01\
-    \x12\x03\x20\x07\x0b\n\x0c\n\x05\x04\x04\x02\x02\x03\x12\x03\x20\x0e\x0f\
-    \n\n\n\x02\x04\x05\x12\x04#\0'\x01\n\n\n\x03\x04\x05\x01\x12\x03#\x08\r\
-    \n\x0b\n\x04\x04\x05\x02\0\x12\x03$\x02\x13\n\x0c\n\x05\x04\x05\x02\0\
-    \x05\x12\x03$\x02\x08\n\x0c\n\x05\x04\x05\x02\0\x01\x12\x03$\t\x0e\n\x0c\
-    \n\x05\x04\x05\x02\0\x03\x12\x03$\x11\x12\n\x0b\n\x04\x04\x05\x02\x01\
-    \x12\x03%\x02\x14\n\x0c\n\x05\x04\x05\x02\x01\x05\x12\x03%\x02\x08\n\x0c\
-    \n\x05\x04\x05\x02\x01\x01\x12\x03%\t\x0f\n\x0c\n\x05\x04\x05\x02\x01\
-    \x03\x12\x03%\x12\x13\n\x0b\n\x04\x04\x05\x02\x02\x12\x03&\x02\x11\n\x0c\
-    \n\x05\x04\x05\x02\x02\x05\x12\x03&\x02\x07\n\x0c\n\x05\x04\x05\x02\x02\
-    \x01\x12\x03&\x08\x0c\n\x0c\n\x05\x04\x05\x02\x02\x03\x12\x03&\x0f\x10\n\
-    \n\n\x02\x04\x06\x12\x04)\0/\x01\n\n\n\x03\x04\x06\x01\x12\x03)\x08\x0f\
-    \n\x0b\n\x04\x04\x06\x02\0\x12\x03*\x02\x13\n\x0c\n\x05\x04\x06\x02\0\
-    \x06\x12\x03*\x02\x0b\n\x0c\n\x05\x04\x06\x02\0\x01\x12\x03*\x0c\x0e\n\
-    \x0c\n\x05\x04\x06\x02\0\x03\x12\x03*\x11\x12\n\x0b\n\x04\x04\x06\x02\
-    \x01\x12\x03+\x02\x13\n\x0c\n\x05\x04\x06\x02\x01\x05\x12\x03+\x02\x08\n\
-    \x0c\n\x05\x04\x06\x02\x01\x01\x12\x03+\t\x0e\n\x0c\n\x05\x04\x06\x02\
-    \x01\x03\x12\x03+\x11\x12\n\x0b\n\x04\x04\x06\x02\x02\x12\x03,\x02\x13\n\
-    \x0c\n\x05\x04\x06\x02\x02\x05\x12\x03,\x02\x08\n\x0c\n\x05\x04\x06\x02\
-    \x02\x01\x12\x03,\t\x0e\n\x0c\n\x05\x04\x06\x02\x02\x03\x12\x03,\x11\x12\
-    \n\x0b\n\x04\x04\x06\x02\x03\x12\x03-\x02\x12\n\x0c\n\x05\x04\x06\x02\
-    \x03\x06\x12\x03-\x02\x07\n\x0c\n\x05\x04\x06\x02\x03\x01\x12\x03-\x08\r\
-    \n\x0c\n\x05\x04\x06\x02\x03\x03\x12\x03-\x10\x11\n\x0b\n\x04\x04\x06\
-    \x02\x04\x12\x03.\x02\x1c\n\x0c\n\x05\x04\x06\x02\x04\x05\x12\x03.\x02\
-    \x08\n\x0c\n\x05\x04\x06\x02\x04\x01\x12\x03.\t\x17\n\x0c\n\x05\x04\x06\
-    \x02\x04\x03\x12\x03.\x1a\x1b\n\n\n\x02\x04\x07\x12\x041\06\x01\n\n\n\
-    \x03\x04\x07\x01\x12\x031\x08\x0e\n\x0b\n\x04\x04\x07\x02\0\x12\x032\x02\
-    +\n\x0c\n\x05\x04\x07\x02\0\x04\x12\x032\x02\n\n\x0c\n\x05\x04\x07\x02\0\
-    \x06\x12\x032\x0b\x1b\n\x0c\n\x05\x04\x07\x02\0\x01\x12\x032\x1c&\n\x0c\
-    \n\x05\x04\x07\x02\0\x03\x12\x032)*\n\x0b\n\x04\x04\x07\x02\x01\x12\x033\
-    \x02#\n\x0c\n\x05\x04\x07\x02\x01\x04\x12\x033\x02\n\n\x0c\n\x05\x04\x07\
-    \x02\x01\x06\x12\x033\x0b\x12\n\x0c\n\x05\x04\x07\x02\x01\x01\x12\x033\
-    \x13\x1e\n\x0c\n\x05\x04\x07\x02\x01\x03\x12\x033!\"\n\x0b\n\x04\x04\x07\
-    \x02\x02\x12\x034\x02&\n\x0c\n\x05\x04\x07\x02\x02\x04\x12\x034\x02\n\n\
-    \x0c\n\x05\x04\x07\x02\x02\x06\x12\x034\x0b\x14\n\x0c\n\x05\x04\x07\x02\
-    \x02\x01\x12\x034\x15!\n\x0c\n\x05\x04\x07\x02\x02\x03\x12\x034$%\n\x0b\
-    \n\x04\x04\x07\x02\x03\x12\x035\x02\x1b\n\x0c\n\x05\x04\x07\x02\x03\x05\
-    \x12\x035\x02\x08\n\x0c\n\x05\x04\x07\x02\x03\x01\x12\x035\t\x16\n\x0c\n\
-    \x05\x04\x07\x02\x03\x03\x12\x035\x19\x1ab\x06proto3\
+    r\"\xb1\x01\n\x04Mesh\x12/\n\ntexture_id\x18\x01\x20\x01(\x0b2\x10.proto\
+    .TextureIdR\ttextureId\x12\x18\n\x07indices\x18\x02\x20\x01(\x0cR\x07ind\
+    ices\x12\x1f\n\x0bindex_count\x18\x03\x20\x01(\rR\nindexCount\x12\x1a\n\
+    \x08vertices\x18\x04\x20\x01(\x0cR\x08vertices\x12!\n\x0cvertex_count\
+    \x18\x05\x20\x01(\rR\x0bvertexCount\"o\n\x10ClippedPrimitive\x12(\n\tcli\
+    p_rect\x18\x01\x20\x01(\x0b2\x0b.proto.RectR\x08clipRect\x12\x10\n\x03ta\
+    g\x18\x02\x20\x01(\rR\x03tag\x12\x1f\n\x04mesh\x18\x03\x20\x01(\x0b2\x0b\
+    .proto.MeshR\x04mesh\"I\n\x05Image\x12\x14\n\x05width\x18\x01\x20\x01(\r\
+    R\x05width\x12\x16\n\x06height\x18\x02\x20\x01(\rR\x06height\x12\x12\n\
+    \x04data\x18\x03\x20\x01(\x0cR\x04data\"\xa0\x01\n\x07Texture\x12\x20\n\
+    \x02id\x18\x01\x20\x01(\x0b2\x10.proto.TextureIdR\x02id\x12\x13\n\x05pos\
+    _x\x18\x02\x20\x01(\rR\x04posX\x12\x13\n\x05pos_y\x18\x03\x20\x01(\rR\
+    \x04posY\x12\"\n\x05image\x18\x04\x20\x01(\x0b2\x0c.proto.ImageR\x05imag\
+    e\x12%\n\x0etexture_filter\x18\x05\x20\x01(\rR\rtextureFilter\"\xcc\x01\
+    \n\x06Output\x127\n\nprimitives\x18\x01\x20\x03(\x0b2\x17.proto.ClippedP\
+    rimitiveR\nprimitives\x12/\n\x0btexture_set\x18\x02\x20\x03(\x0b2\x0e.pr\
+    oto.TextureR\ntextureSet\x123\n\x0ctexture_free\x18\x03\x20\x03(\x0b2\
+    \x10.proto.TextureIdR\x0btextureFree\x12#\n\rrepaint_after\x18\x04\x20\
+    \x01(\rR\x0crepaintAfterJ\xd2\x0b\n\x06\x12\x04\0\0+\x01\n\x08\n\x01\x0c\
+    \x12\x03\0\0\x12\n\x08\n\x01\x02\x12\x03\x01\0\x0e\n\t\n\x02\x03\0\x12\
+    \x03\x02\0\x16\n\n\n\x02\x04\0\x12\x04\x04\0\x08\x01\n\n\n\x03\x04\0\x01\
+    \x12\x03\x04\x08\x11\n\x0b\n\x04\x04\0\x02\0\x12\x03\x05\x02\x11\n\x0c\n\
+    \x05\x04\0\x02\0\x05\x12\x03\x05\x02\x08\n\x0c\n\x05\x04\0\x02\0\x01\x12\
+    \x03\x05\t\x0c\n\x0c\n\x05\x04\0\x02\0\x03\x12\x03\x05\x0f\x10\n\x0b\n\
+    \x04\x04\0\x02\x01\x12\x03\x06\x02\x15\n\x0c\n\x05\x04\0\x02\x01\x05\x12\
+    \x03\x06\x02\x08\n\x0c\n\x05\x04\0\x02\x01\x01\x12\x03\x06\t\x10\n\x0c\n\
+    \x05\x04\0\x02\x01\x03\x12\x03\x06\x13\x14\n\x0b\n\x04\x04\0\x02\x02\x12\
+    \x03\x07\x02\x12\n\x0c\n\x05\x04\0\x02\x02\x05\x12\x03\x07\x02\x08\n\x0c\
+    \n\x05\x04\0\x02\x02\x01\x12\x03\x07\t\r\n\x0c\n\x05\x04\0\x02\x02\x03\
+    \x12\x03\x07\x10\x11\n\n\n\x02\x04\x01\x12\x04\n\0\x10\x01\n\n\n\x03\x04\
+    \x01\x01\x12\x03\n\x08\x0c\n\x0b\n\x04\x04\x01\x02\0\x12\x03\x0b\x02\x1b\
+    \n\x0c\n\x05\x04\x01\x02\0\x06\x12\x03\x0b\x02\x0b\n\x0c\n\x05\x04\x01\
+    \x02\0\x01\x12\x03\x0b\x0c\x16\n\x0c\n\x05\x04\x01\x02\0\x03\x12\x03\x0b\
+    \x19\x1a\n\x0b\n\x04\x04\x01\x02\x01\x12\x03\x0c\x02\x14\n\x0c\n\x05\x04\
+    \x01\x02\x01\x05\x12\x03\x0c\x02\x07\n\x0c\n\x05\x04\x01\x02\x01\x01\x12\
+    \x03\x0c\x08\x0f\n\x0c\n\x05\x04\x01\x02\x01\x03\x12\x03\x0c\x12\x13\n\
+    \x0b\n\x04\x04\x01\x02\x02\x12\x03\r\x02\x19\n\x0c\n\x05\x04\x01\x02\x02\
+    \x05\x12\x03\r\x02\x08\n\x0c\n\x05\x04\x01\x02\x02\x01\x12\x03\r\t\x14\n\
+    \x0c\n\x05\x04\x01\x02\x02\x03\x12\x03\r\x17\x18\n\x0b\n\x04\x04\x01\x02\
+    \x03\x12\x03\x0e\x02\x15\n\x0c\n\x05\x04\x01\x02\x03\x05\x12\x03\x0e\x02\
+    \x07\n\x0c\n\x05\x04\x01\x02\x03\x01\x12\x03\x0e\x08\x10\n\x0c\n\x05\x04\
+    \x01\x02\x03\x03\x12\x03\x0e\x13\x14\n\x0b\n\x04\x04\x01\x02\x04\x12\x03\
+    \x0f\x02\x1a\n\x0c\n\x05\x04\x01\x02\x04\x05\x12\x03\x0f\x02\x08\n\x0c\n\
+    \x05\x04\x01\x02\x04\x01\x12\x03\x0f\t\x15\n\x0c\n\x05\x04\x01\x02\x04\
+    \x03\x12\x03\x0f\x18\x19\n\n\n\x02\x04\x02\x12\x04\x12\0\x16\x01\n\n\n\
+    \x03\x04\x02\x01\x12\x03\x12\x08\x18\n\x0b\n\x04\x04\x02\x02\0\x12\x03\
+    \x13\x02\x15\n\x0c\n\x05\x04\x02\x02\0\x06\x12\x03\x13\x02\x06\n\x0c\n\
+    \x05\x04\x02\x02\0\x01\x12\x03\x13\x07\x10\n\x0c\n\x05\x04\x02\x02\0\x03\
+    \x12\x03\x13\x13\x14\n\x0b\n\x04\x04\x02\x02\x01\x12\x03\x14\x02\x11\n\
+    \x0c\n\x05\x04\x02\x02\x01\x05\x12\x03\x14\x02\x08\n\x0c\n\x05\x04\x02\
+    \x02\x01\x01\x12\x03\x14\t\x0c\n\x0c\n\x05\x04\x02\x02\x01\x03\x12\x03\
+    \x14\x0f\x10\n\x0b\n\x04\x04\x02\x02\x02\x12\x03\x15\x02\x10\n\x0c\n\x05\
+    \x04\x02\x02\x02\x06\x12\x03\x15\x02\x06\n\x0c\n\x05\x04\x02\x02\x02\x01\
+    \x12\x03\x15\x07\x0b\n\x0c\n\x05\x04\x02\x02\x02\x03\x12\x03\x15\x0e\x0f\
+    \n\n\n\x02\x04\x03\x12\x04\x18\0\x1c\x01\n\n\n\x03\x04\x03\x01\x12\x03\
+    \x18\x08\r\n\x0b\n\x04\x04\x03\x02\0\x12\x03\x19\x02\x13\n\x0c\n\x05\x04\
+    \x03\x02\0\x05\x12\x03\x19\x02\x08\n\x0c\n\x05\x04\x03\x02\0\x01\x12\x03\
+    \x19\t\x0e\n\x0c\n\x05\x04\x03\x02\0\x03\x12\x03\x19\x11\x12\n\x0b\n\x04\
+    \x04\x03\x02\x01\x12\x03\x1a\x02\x14\n\x0c\n\x05\x04\x03\x02\x01\x05\x12\
+    \x03\x1a\x02\x08\n\x0c\n\x05\x04\x03\x02\x01\x01\x12\x03\x1a\t\x0f\n\x0c\
+    \n\x05\x04\x03\x02\x01\x03\x12\x03\x1a\x12\x13\n\x0b\n\x04\x04\x03\x02\
+    \x02\x12\x03\x1b\x02\x11\n\x0c\n\x05\x04\x03\x02\x02\x05\x12\x03\x1b\x02\
+    \x07\n\x0c\n\x05\x04\x03\x02\x02\x01\x12\x03\x1b\x08\x0c\n\x0c\n\x05\x04\
+    \x03\x02\x02\x03\x12\x03\x1b\x0f\x10\n\n\n\x02\x04\x04\x12\x04\x1e\0$\
+    \x01\n\n\n\x03\x04\x04\x01\x12\x03\x1e\x08\x0f\n\x0b\n\x04\x04\x04\x02\0\
+    \x12\x03\x1f\x02\x13\n\x0c\n\x05\x04\x04\x02\0\x06\x12\x03\x1f\x02\x0b\n\
+    \x0c\n\x05\x04\x04\x02\0\x01\x12\x03\x1f\x0c\x0e\n\x0c\n\x05\x04\x04\x02\
+    \0\x03\x12\x03\x1f\x11\x12\n\x0b\n\x04\x04\x04\x02\x01\x12\x03\x20\x02\
+    \x13\n\x0c\n\x05\x04\x04\x02\x01\x05\x12\x03\x20\x02\x08\n\x0c\n\x05\x04\
+    \x04\x02\x01\x01\x12\x03\x20\t\x0e\n\x0c\n\x05\x04\x04\x02\x01\x03\x12\
+    \x03\x20\x11\x12\n\x0b\n\x04\x04\x04\x02\x02\x12\x03!\x02\x13\n\x0c\n\
+    \x05\x04\x04\x02\x02\x05\x12\x03!\x02\x08\n\x0c\n\x05\x04\x04\x02\x02\
+    \x01\x12\x03!\t\x0e\n\x0c\n\x05\x04\x04\x02\x02\x03\x12\x03!\x11\x12\n\
+    \x0b\n\x04\x04\x04\x02\x03\x12\x03\"\x02\x12\n\x0c\n\x05\x04\x04\x02\x03\
+    \x06\x12\x03\"\x02\x07\n\x0c\n\x05\x04\x04\x02\x03\x01\x12\x03\"\x08\r\n\
+    \x0c\n\x05\x04\x04\x02\x03\x03\x12\x03\"\x10\x11\n\x0b\n\x04\x04\x04\x02\
+    \x04\x12\x03#\x02\x1c\n\x0c\n\x05\x04\x04\x02\x04\x05\x12\x03#\x02\x08\n\
+    \x0c\n\x05\x04\x04\x02\x04\x01\x12\x03#\t\x17\n\x0c\n\x05\x04\x04\x02\
+    \x04\x03\x12\x03#\x1a\x1b\n\n\n\x02\x04\x05\x12\x04&\0+\x01\n\n\n\x03\
+    \x04\x05\x01\x12\x03&\x08\x0e\n\x0b\n\x04\x04\x05\x02\0\x12\x03'\x02+\n\
+    \x0c\n\x05\x04\x05\x02\0\x04\x12\x03'\x02\n\n\x0c\n\x05\x04\x05\x02\0\
+    \x06\x12\x03'\x0b\x1b\n\x0c\n\x05\x04\x05\x02\0\x01\x12\x03'\x1c&\n\x0c\
+    \n\x05\x04\x05\x02\0\x03\x12\x03')*\n\x0b\n\x04\x04\x05\x02\x01\x12\x03(\
+    \x02#\n\x0c\n\x05\x04\x05\x02\x01\x04\x12\x03(\x02\n\n\x0c\n\x05\x04\x05\
+    \x02\x01\x06\x12\x03(\x0b\x12\n\x0c\n\x05\x04\x05\x02\x01\x01\x12\x03(\
+    \x13\x1e\n\x0c\n\x05\x04\x05\x02\x01\x03\x12\x03(!\"\n\x0b\n\x04\x04\x05\
+    \x02\x02\x12\x03)\x02&\n\x0c\n\x05\x04\x05\x02\x02\x04\x12\x03)\x02\n\n\
+    \x0c\n\x05\x04\x05\x02\x02\x06\x12\x03)\x0b\x14\n\x0c\n\x05\x04\x05\x02\
+    \x02\x01\x12\x03)\x15!\n\x0c\n\x05\x04\x05\x02\x02\x03\x12\x03)$%\n\x0b\
+    \n\x04\x04\x05\x02\x03\x12\x03*\x02\x1b\n\x0c\n\x05\x04\x05\x02\x03\x05\
+    \x12\x03*\x02\x08\n\x0c\n\x05\x04\x05\x02\x03\x01\x12\x03*\t\x16\n\x0c\n\
+    \x05\x04\x05\x02\x03\x03\x12\x03*\x19\x1ab\x06proto3\
 ";
 
 /// `FileDescriptorProto` object which was a source for this generated file
@@ -1510,10 +1185,8 @@ pub fn file_descriptor() -> &'static ::protobuf::reflect::FileDescriptor {
         let generated_file_descriptor = generated_file_descriptor_lazy.get(|| {
             let mut deps = ::std::vec::Vec::with_capacity(1);
             deps.push(super::common::file_descriptor().clone());
-            let mut messages = ::std::vec::Vec::with_capacity(8);
+            let mut messages = ::std::vec::Vec::with_capacity(6);
             messages.push(TextureId::generated_message_descriptor_data());
-            messages.push(Color32::generated_message_descriptor_data());
-            messages.push(Vertex::generated_message_descriptor_data());
             messages.push(Mesh::generated_message_descriptor_data());
             messages.push(ClippedPrimitive::generated_message_descriptor_data());
             messages.push(Image::generated_message_descriptor_data());
