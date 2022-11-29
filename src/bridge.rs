@@ -1,4 +1,5 @@
 use std::ffi::c_void;
+use std::panic;
 use std::sync::RwLock;
 
 use egui::{ClippedPrimitive, Context, ImageData, TextureFilter, TextureId};
@@ -26,10 +27,22 @@ lazy_static! {
 pub fn init(initializer: UnityInitializer, app: AppCreator) -> *const c_void {
     INITIALIZER.write().unwrap().replace(initializer);
     APP.write().unwrap().replace(app(&CONTEXT));
-    update as _
+    safe_update as _
 }
 
-pub fn update(buffer: Buffer) {
+pub fn safe_update(buffer: Buffer) -> u32 {
+    let result = panic::catch_unwind(|| {
+        update(buffer);
+    });
+    if let Err(err) = result {
+        println!("unexpected error:{:?}", err);
+        1
+    } else {
+        0
+    }
+}
+
+fn update(buffer: Buffer) {
     let input = parse_input(buffer);
     CONTEXT.begin_frame(input);
     begin_paint();
