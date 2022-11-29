@@ -28,7 +28,7 @@ pub extern "C" fn init(initializer: uegui::UnityInitializer) -> *const c_void {
             .or_default()
             .push("unity".to_owned());
         cc.set_fonts(fonts);
-        
+
         Box::new(MyApp::default())
     }))
 }

@@ -30,7 +30,8 @@ pub fn init(initializer: UnityInitializer, app: AppCreator) -> *const c_void {
     safe_update as _
 }
 
-pub fn safe_update(buffer: Buffer) -> u32 {
+#[no_mangle]
+pub extern "C" fn safe_update(buffer: Buffer) -> u32 {
     let result = panic::catch_unwind(|| {
         update(buffer);
     });
@@ -45,13 +46,13 @@ pub fn safe_update(buffer: Buffer) -> u32 {
 fn update(buffer: Buffer) {
     let input = parse_input(buffer);
     CONTEXT.begin_frame(input);
-    begin_paint();
     let mut app = APP.write().unwrap();
     app.as_mut().unwrap().update(&CONTEXT);
     let output = CONTEXT.end_frame();
-    if output.repaint_after.is_zero() {
+    if !output.repaint_after.is_zero() {
         return;
     }
+    begin_paint();
     for id in output.textures_delta.free {
         rem_texture(id);
     }

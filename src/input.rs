@@ -205,10 +205,7 @@ pub fn parse_input(buffer: Buffer) -> RawInput {
     input.predicted_dt = pb_input.predicted_dt;
     for event in pb_input.events {
         if let Some(event) = event_from_pb_to_native(event) {
-            println!("event:{:?} added", event);
             input.events.push(event);
-        } else {
-            println!("event parse failed");
         }
     }
     input
