@@ -1,3 +1,9 @@
+//! Bridge from unity and egui.
+//! Egui must be embeded in unity, so initialization should be invoked in unity.
+//! Bridge provide an `init` function for unity to do initialization works.
+//! Unity should provide something functionality for egui to gather input and paint meshes.
+//! On the other side, egui should provide a function to be called in every frame.
+//! All these works be done in `init` function.
 use std::ffi::c_void;
 use std::panic;
 use std::sync::RwLock;
@@ -9,27 +15,42 @@ use lazy_static::lazy_static;
 use crate::{App, AppCreator, Buffer};
 use crate::input::parse_input;
 
+/// Unity provided functions for painting.
+/// `set_texture` add or update texture in unity.
+/// `rem_texture` remove texture in unity.
+/// `begin_paint` called before paint begin, clear data for last frame.
+/// `paint_mesh` generate and paint mesh in unity.
+/// `end_paint` do something after paint in unity.
 #[repr(C)]
 pub struct UnityInitializer {
+    /// set_texture(id, offsetX, offsetY, width, height, filter_mode, data)
     set_texture: extern "C" fn(u64, u32, u32, u32, u32, u32, *const u8),
+    /// rem_texture(id)
     rem_texture: extern "C" fn(u64),
+    /// begin_paint()
     begin_paint: extern "C" fn(),
+    /// paint_mesh(texture_id, vertex_count, vertex_buffer, index_count, index_buffer, bound_min_x, bound_min_y, bound_max_x, bound_max_y)
     paint_mesh: extern "C" fn(u64, u32, *const u8, u32, *const u8, f32, f32, f32, f32),
+    /// end_paint()
     end_paint: extern "C" fn(),
 }
 
 lazy_static! {
     static ref INITIALIZER: RwLock<Option<UnityInitializer>> = RwLock::new(None);
-    static ref APP:RwLock<Option<Box<dyn App>>> = RwLock::new(None);
-    static ref CONTEXT:Context = Context::default();
+    static ref APP: RwLock<Option<Box<dyn App>>> = RwLock::new(None);
+    static ref CONTEXT: Context = Context::default();
 }
 
+/// Initialize library, and create the application used by now.
+/// Return a function pointer as `safe_update`.
 pub fn init(initializer: UnityInitializer, app: AppCreator) -> *const c_void {
     INITIALIZER.write().unwrap().replace(initializer);
     APP.write().unwrap().replace(app(&CONTEXT));
     safe_update as _
 }
 
+/// Wrapper function catching panic from FFI boundary.
+/// This is a c function to be called from c/c++/c#,  so `#[no_mangle and extern]` and `extern "C"` are required.
 #[no_mangle]
 pub extern "C" fn safe_update(buffer: Buffer) -> u32 {
     let result = panic::catch_unwind(|| {
@@ -43,6 +64,17 @@ pub extern "C" fn safe_update(buffer: Buffer) -> u32 {
     }
 }
 
+/// Update function called very frame from unity.
+/// 1. get input from unity
+/// 2. call `begin_frame` in egui
+/// 3. call `App::update` in egui
+/// 4. call `end_frame` in egui
+/// 5. return if not paint immediately
+/// 6. call `begin_paint` from unity
+/// 7. call `rem_texture` from unity
+/// 8. call `set_texture` from unity
+/// 9. call `paint_mesh` from unity
+/// 10. call `end_paint` from unity
 fn update(buffer: Buffer) {
     let input = parse_input(buffer);
     CONTEXT.begin_frame(input);
@@ -66,6 +98,7 @@ fn update(buffer: Buffer) {
     end_paint();
 }
 
+/// Wrapper function for `set_texture` from unity.
 pub fn set_texture(id: TextureId, image: ImageDelta) {
     let id = match id {
         TextureId::Managed(id) => id << 1,
@@ -100,6 +133,7 @@ pub fn set_texture(id: TextureId, image: ImageDelta) {
     )
 }
 
+/// Wrapper function for `rem_texture` from unity.
 pub fn rem_texture(id: TextureId) {
     let id = match id {
         TextureId::Managed(id) => id << 1,
@@ -110,12 +144,14 @@ pub fn rem_texture(id: TextureId) {
     (ui.rem_texture)(id);
 }
 
+/// Wrapper function for `begin_paint` from unity.
 pub fn begin_paint() {
     let ui = INITIALIZER.read().unwrap();
     let ui = ui.as_ref().unwrap();
     (ui.begin_paint)()
 }
 
+/// Wrapper function for `paint_mesh` from unity.
 pub fn paint_mesh(cp: ClippedPrimitive) {
     match cp.primitive {
         Primitive::Mesh(mesh) => {
@@ -143,6 +179,7 @@ pub fn paint_mesh(cp: ClippedPrimitive) {
     }
 }
 
+/// Wrapper function for `end_paint` from unity.
 pub fn end_paint() {
     let ui = INITIALIZER.read().unwrap();
     let ui = ui.as_ref().unwrap();

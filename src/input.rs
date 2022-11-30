@@ -1,3 +1,6 @@
+//! Both Egui input and Unity input are complicated, so a simple but efficient way to exchange
+//! information interchangably is to use a binary protocol like protobuf. And this is the way
+//! this project is using.
 use std::ptr::slice_from_raw_parts;
 
 use egui::{Key, RawInput};
@@ -5,8 +8,7 @@ use egui::Event::PointerButton;
 use protobuf::Message;
 
 use crate::Buffer;
-use crate::proto::common::{Pos2, Rect};
-use crate::proto::input::{ButtonType, Event, EventType, Input, KeyType, Modifiers};
+use crate::proto::input::{ButtonType, Event, EventType, Input, KeyType, Modifiers, Pos2, Rect};
 
 fn key_type_from_pb_to_native(t: KeyType) -> Option<Key> {
     match t {
