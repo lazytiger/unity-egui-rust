@@ -2,7 +2,15 @@ syntax = "proto3";
 
 package proto;
 
-import "common.proto";
+message Pos2 {
+  float x = 1;
+  float y = 2;
+}
+
+message Rect {
+  Pos2 min = 1;
+  Pos2 max = 2;
+}
 
 message Modifiers {
   bool alt = 1;
