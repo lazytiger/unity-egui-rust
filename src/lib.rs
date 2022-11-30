@@ -4,9 +4,24 @@
 //! ```
 //! #[no_mangle]
 //! pub extern "C" fn init(initializer: uegui::UnityInitializer) -> *const c_void {
-//!     uegui::init(initializer, Box::new(|cc| {
-//!        Box::new(MyApp::default())
-//!     }))
+//!     let context = UnityContext::new(initializer, |cc| {
+//!         MyApp::default()
+//!     });
+//!     EGuiInitializer {
+//!         update: update as _,
+//!         app: Box::leak(Box::new(context)) as *mut UnityContext<MyApp> as _,
+//!     }
+//! }
+//!
+//! //TODO use macro
+//! #[no_mangle]
+//! extern "C" fn update(input: uegui::Buffer, data: *mut c_void) {
+//!     unsafe {
+//!         let app: &mut UnityContext<MyApp> = &mut *(data as *mut UnityContext<MyApp>);
+//!         if let Err(err) = app.update(input) {
+//!             eprint!("unexpected error:{:?}", err);
+//!         }
+//!     }
 //! }
 //!
 //! struct MyApp {
@@ -41,10 +56,9 @@
 //! }
 //! ```
 //!
-pub use egui;
+use std::ffi::c_void;
 
-pub use bridge::init;
-pub use bridge::UnityInitializer;
+pub use bridge::{UnityContext, UnityInitializer};
 
 mod bridge;
 mod input;
@@ -57,9 +71,17 @@ pub struct Buffer {
     pub len: usize,
 }
 
+/// Wrapper struct for rust exported functions and data
+#[repr(C)]
+pub struct EGuiInitializer {
+    /// update function pointer
+    pub update: *const c_void,
+    /// app data pointer
+    pub app: *mut c_void,
+}
+
 /// Application trait like eframe.
-pub trait App: Send + Sync {
+pub trait App {
     fn update(&mut self, context: &egui::Context);
 }
 
-pub type AppCreator = Box<dyn FnOnce(&egui::Context) -> Box<dyn App>>;

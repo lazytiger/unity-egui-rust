@@ -185,10 +185,10 @@ fn pos2_from_pb_to_native(pos: &Pos2) -> egui::Pos2 {
     egui::Pos2 { x: pos.x, y: pos.y }
 }
 
-pub fn parse_input(buffer: Buffer) -> RawInput {
+pub fn parse_input(buffer: Buffer) -> Result<RawInput, protobuf::Error> {
     let buffer = unsafe { &*slice_from_raw_parts(buffer.data, buffer.len) };
     let mut pb_input = Input::default();
-    pb_input.merge_from_bytes(buffer).unwrap();
+    pb_input.merge_from_bytes(buffer)?;
     let mut input = RawInput::default();
     input.screen_rect = pb_input.screen_rect.as_ref().map(rect_from_pb_to_native);
     input.has_focus = pb_input.has_focus;
@@ -201,8 +201,8 @@ pub fn parse_input(buffer: Buffer) -> RawInput {
     if pb_input.max_texture_side > 0 {
         input.max_texture_side = Some(pb_input.max_texture_side as usize);
     }
-    if pb_input.modifier.is_some() {
-        input.modifiers = modifier_from_pb_to_native(pb_input.modifier.as_ref().unwrap());
+    if let Some(modifier) = pb_input.modifier.0 {
+        input.modifiers = modifier_from_pb_to_native(modifier.as_ref());
     }
     input.predicted_dt = pb_input.predicted_dt;
     for event in pb_input.events {
@@ -210,5 +210,5 @@ pub fn parse_input(buffer: Buffer) -> RawInput {
             input.events.push(event);
         }
     }
-    input
+    Ok(input)
 }

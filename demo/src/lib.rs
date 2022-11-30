@@ -1,10 +1,12 @@
 use std::ffi::c_void;
 
-use uegui::egui;
+use egui_demo_lib::DemoWindows;
+
+use uegui::{EGuiInitializer, UnityContext};
 
 #[no_mangle]
-pub extern "C" fn init(initializer: uegui::UnityInitializer) -> *const c_void {
-    uegui::init(initializer, Box::new(|cc| {
+pub extern "C" fn init(initializer: uegui::UnityInitializer) -> EGuiInitializer {
+    let context = UnityContext::new(initializer, |cc| {
         let mut fonts = egui::FontDefinitions::default();
 
         // Install my own font (maybe supporting non-latin characters).
@@ -28,38 +30,37 @@ pub extern "C" fn init(initializer: uegui::UnityInitializer) -> *const c_void {
             .or_default()
             .push("unity".to_owned());
         cc.set_fonts(fonts);
-
-        Box::new(MyApp::default())
-    }))
+        MyApp::default()
+    });
+    EGuiInitializer {
+        update: update as _,
+        app: Box::leak(Box::new(context)) as *mut UnityContext<MyApp> as _,
+    }
 }
 
-struct MyApp {
-    name: String,
-    age: u32,
-}
-
-impl Default for MyApp {
-    fn default() -> Self {
-        Self {
-            name: "Arthur".to_owned(),
-            age: 42,
+//TODO use macro to replace this
+#[no_mangle]
+extern "C" fn update(input: uegui::Buffer, data: *mut c_void, destroy: u32) {
+    unsafe {
+        let app = data as *mut UnityContext<MyApp>;
+        if destroy != 0 {
+            let _ = Box::from_raw(app);
+        } else {
+            let app: &mut UnityContext<MyApp> = &mut *app;
+            if let Err(err) = app.update(input) {
+                eprint!("unexpected error:{:?}", err);
+            }
         }
     }
 }
 
+#[derive(Default)]
+struct MyApp {
+    demo: DemoWindows,
+}
+
 impl uegui::App for MyApp {
     fn update(&mut self, ctx: &egui::Context) {
-        egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("My egui Application");
-            ui.horizontal(|ui| {
-                ui.label("Your name: ");
-                ui.text_edit_singleline(&mut self.name);
-            });
-            ui.add(egui::Slider::new(&mut self.age, 0..=120).text("age"));
-            if ui.button("Click each year").clicked() {
-                self.age += 1;
-            }
-            ui.label(format!("Hello '{}', age {}", self.name, self.age));
-        });
+        self.demo.ui(ctx);
     }
 }
