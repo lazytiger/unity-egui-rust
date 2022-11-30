@@ -1,28 +1,10 @@
 //! This is a library for interop between unity and egui.
 //! When writing your own application you should create a new cargo library project with crate-type
-//! has cdylib. Then an c type function named init should be provided as the following code
+//! has cdylib. Then use init macro as the following code
 //! ```
-//! #[no_mangle]
-//! pub extern "C" fn init(initializer: uegui::UnityInitializer) -> *const c_void {
-//!     let context = UnityContext::new(initializer, |cc| {
-//!         MyApp::default()
-//!     });
-//!     EGuiInitializer {
-//!         update: update as _,
-//!         app: Box::leak(Box::new(context)) as *mut UnityContext<MyApp> as _,
-//!     }
-//! }
-//!
-//! //TODO use macro
-//! #[no_mangle]
-//! extern "C" fn update(input: uegui::Buffer, data: *mut c_void) {
-//!     unsafe {
-//!         let app: &mut UnityContext<MyApp> = &mut *(data as *mut UnityContext<MyApp>);
-//!         if let Err(err) = app.update(input) {
-//!             eprint!("unexpected error:{:?}", err);
-//!         }
-//!     }
-//! }
+//! uegui::init!(MyDemoApp, |cc| {
+//!    MyApp::default()
+//! });
 //!
 //! struct MyApp {
 //!     name: String,
@@ -85,3 +67,32 @@ pub trait App {
     fn update(&mut self, context: &egui::Context);
 }
 
+/// Generate exported function used for unity.
+#[macro_export]
+macro_rules! init {
+    ($name:ident, $app:expr) => {
+        #[no_mangle]
+        pub extern "C" fn init(initializer: $crate::UnityInitializer) -> $crate::EGuiInitializer {
+            let context = $crate::UnityContext::new(initializer, $app);
+            $crate::EGuiInitializer {
+                update: update as _,
+                app: Box::leak(Box::new(context)) as *mut $crate::UnityContext<$name> as _,
+            }
+        }
+
+        #[no_mangle]
+        extern "C" fn update(input: $crate::Buffer, data: *mut std::ffi::c_void, destroy: u32) {
+            unsafe {
+                let app = data as *mut $crate::UnityContext<$name>;
+                if destroy != 0 {
+                    let _ = Box::from_raw(app);
+                } else {
+                    let app: &mut $crate::UnityContext<$name> = &mut *app;
+                    if let Err(err) = app.update(input) {
+                        eprint!("unexpected error:{:?}", err);
+                    }
+                }
+            }
+        }
+    };
+}
