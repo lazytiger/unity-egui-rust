@@ -1405,7 +1405,7 @@ pub struct Input {
     // @@protoc_insertion_point(field:proto.Input.max_texture_side)
     pub max_texture_side: u32,
     // @@protoc_insertion_point(field:proto.Input.time)
-    pub time: u32,
+    pub time: f64,
     // @@protoc_insertion_point(field:proto.Input.predicted_dt)
     pub predicted_dt: f32,
     // @@protoc_insertion_point(field:proto.Input.events)
@@ -1500,8 +1500,8 @@ impl ::protobuf::Message for Input {
                 24 => {
                     self.max_texture_side = is.read_uint32()?;
                 },
-                32 => {
-                    self.time = is.read_uint32()?;
+                33 => {
+                    self.time = is.read_double()?;
                 },
                 45 => {
                     self.predicted_dt = is.read_float()?;
@@ -1537,8 +1537,8 @@ impl ::protobuf::Message for Input {
         if self.max_texture_side != 0 {
             my_size += ::protobuf::rt::uint32_size(3, self.max_texture_side);
         }
-        if self.time != 0 {
-            my_size += ::protobuf::rt::uint32_size(4, self.time);
+        if self.time != 0. {
+            my_size += 1 + 8;
         }
         if self.predicted_dt != 0. {
             my_size += 1 + 4;
@@ -1569,8 +1569,8 @@ impl ::protobuf::Message for Input {
         if self.max_texture_side != 0 {
             os.write_uint32(3, self.max_texture_side)?;
         }
-        if self.time != 0 {
-            os.write_uint32(4, self.time)?;
+        if self.time != 0. {
+            os.write_double(4, self.time)?;
         }
         if self.predicted_dt != 0. {
             os.write_float(5, self.predicted_dt)?;
@@ -1604,7 +1604,7 @@ impl ::protobuf::Message for Input {
         self.screen_rect.clear();
         self.pixels_per_point = 0.;
         self.max_texture_side = 0;
-        self.time = 0;
+        self.time = 0.;
         self.predicted_dt = 0.;
         self.events.clear();
         self.has_focus = false;
@@ -1617,7 +1617,7 @@ impl ::protobuf::Message for Input {
             screen_rect: ::protobuf::MessageField::none(),
             pixels_per_point: 0.,
             max_texture_side: 0,
-            time: 0,
+            time: 0.,
             predicted_dt: 0.,
             events: ::std::vec::Vec::new(),
             has_focus: false,
@@ -2340,8 +2340,8 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \xb1\x02\n\x05Input\x12,\n\x0bscreen_rect\x18\x01\x20\x01(\x0b2\x0b.prot\
     o.RectR\nscreenRect\x12(\n\x10pixels_per_point\x18\x02\x20\x01(\x02R\x0e\
     pixelsPerPoint\x12(\n\x10max_texture_side\x18\x03\x20\x01(\rR\x0emaxText\
-    ureSide\x12\x12\n\x04time\x18\x04\x20\x01(\rR\x04time\x12!\n\x0cpredicte\
-    d_dt\x18\x05\x20\x01(\x02R\x0bpredictedDt\x12$\n\x06events\x18\x06\x20\
+    ureSide\x12\x12\n\x04time\x18\x04\x20\x01(\x01R\x04time\x12!\n\x0cpredic\
+    ted_dt\x18\x05\x20\x01(\x02R\x0bpredictedDt\x12$\n\x06events\x18\x06\x20\
     \x03(\x0b2\x0c.proto.EventR\x06events\x12\x1b\n\thas_focus\x18\x07\x20\
     \x01(\x08R\x08hasFocus\x12,\n\x08modifier\x18\x08\x20\x01(\x0b2\x10.prot\
     o.ModifiersR\x08modifier*\x95\x05\n\x07KeyType\x12\x0b\n\x07KT_NONE\x10\

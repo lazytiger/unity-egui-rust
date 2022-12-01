@@ -68,6 +68,9 @@ pub trait App {
 }
 
 /// Generate exported function used for unity.
+/// ```
+/// init!(MyApp, |_cc|{MyApp::default()});
+/// ```
 #[macro_export]
 macro_rules! init {
     ($name:ident, $app:expr) => {
@@ -82,7 +85,7 @@ macro_rules! init {
 
         #[no_mangle]
         extern "C" fn update(input: $crate::Buffer, data: *mut std::ffi::c_void, destroy: u32) {
-            unsafe {
+            if let Err(err) = std::panic::catch_unwind(|| unsafe {
                 let app = data as *mut $crate::UnityContext<$name>;
                 if destroy != 0 {
                     let _ = Box::from_raw(app);
@@ -92,6 +95,8 @@ macro_rules! init {
                         eprint!("unexpected error:{:?}", err);
                     }
                 }
+            }) {
+                eprintln!("unwind error:{:?}", err);
             }
         }
     };

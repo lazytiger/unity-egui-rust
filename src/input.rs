@@ -192,8 +192,8 @@ pub fn parse_input(buffer: Buffer) -> Result<RawInput, protobuf::Error> {
     let mut input = RawInput::default();
     input.screen_rect = pb_input.screen_rect.as_ref().map(rect_from_pb_to_native);
     input.has_focus = pb_input.has_focus;
-    if pb_input.time > 0 {
-        input.time = Some(pb_input.time as f64);
+    if pb_input.time > 0.0 {
+        input.time = Some(pb_input.time);
     }
     if pb_input.pixels_per_point > 0.0 {
         input.pixels_per_point = Some(pb_input.pixels_per_point);
@@ -204,7 +204,9 @@ pub fn parse_input(buffer: Buffer) -> Result<RawInput, protobuf::Error> {
     if let Some(modifier) = pb_input.modifier.0 {
         input.modifiers = modifier_from_pb_to_native(modifier.as_ref());
     }
-    input.predicted_dt = pb_input.predicted_dt;
+    if pb_input.predicted_dt > 0.0 {
+        input.predicted_dt = pb_input.predicted_dt;
+    }
     for event in pb_input.events {
         if let Some(event) = event_from_pb_to_native(event) {
             input.events.push(event);

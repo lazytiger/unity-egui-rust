@@ -38,6 +38,13 @@ pub struct UnityContext<T: App> {
     app: T,
 }
 
+fn texture_id_to_u64(id: TextureId) -> u64 {
+    match id {
+        TextureId::Managed(id) => id << 1,
+        TextureId::User(id) => id << 1 + 1,
+    }
+}
+
 impl<T: App> UnityContext<T> {
     pub fn new<C: FnOnce(&Context) -> T>(initializer: UnityInitializer, creator: C) -> Self {
         let context = Context::default();
@@ -85,10 +92,7 @@ impl<T: App> UnityContext<T> {
 
     /// Wrapper function for `set_texture` from unity.
     pub fn set_texture(&self, id: TextureId, image: ImageDelta) {
-        let id = match id {
-            TextureId::Managed(id) => id << 1,
-            TextureId::User(id) => id << 1 + 1,
-        };
+        let id = texture_id_to_u64(id);
         let filter_mode = match image.options.minification {
             TextureFilter::Nearest => 1,
             TextureFilter::Linear => 2,
@@ -102,7 +106,7 @@ impl<T: App> UnityContext<T> {
             ImageData::Font(font) => (
                 font.size[0] as u32,
                 font.size[1] as u32,
-                font.srgba_pixels(None).collect(),
+                font.srgba_pixels(Some(1.0)).collect(),
             ),
         };
         (self.unity.set_texture)(
@@ -118,10 +122,7 @@ impl<T: App> UnityContext<T> {
 
     /// Wrapper function for `rem_texture` from unity.
     pub fn rem_texture(&self, id: TextureId) {
-        let id = match id {
-            TextureId::Managed(id) => id << 1,
-            TextureId::User(id) => id << 1 + 1,
-        };
+        let id = texture_id_to_u64(id);
         (self.unity.rem_texture)(id);
     }
 
@@ -134,10 +135,7 @@ impl<T: App> UnityContext<T> {
     pub fn paint_mesh(&self, cp: ClippedPrimitive) {
         match cp.primitive {
             Primitive::Mesh(mesh) => {
-                let id = match mesh.texture_id {
-                    TextureId::Managed(id) => id << 1,
-                    TextureId::User(id) => id << 1 + 1,
-                };
+                let id = texture_id_to_u64(mesh.texture_id);
                 (self.unity.paint_mesh)(
                     id,
                     mesh.vertices.len() as u32,

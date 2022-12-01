@@ -187,7 +187,7 @@ message Input {
   Rect screen_rect = 1;
   float pixels_per_point = 2;
   uint32 max_texture_side = 3;
-  uint32 time = 4;
+  double time = 4;
   float predicted_dt = 5;
   repeated  Event events = 6;
   bool has_focus = 7;
