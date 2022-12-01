@@ -17,6 +17,7 @@ use crate::input::parse_input;
 /// `begin_paint` called before paint begin, clear data for last frame.
 /// `paint_mesh` generate and paint mesh in unity.
 /// `end_paint` do something after paint in unity.
+/// `show_keyboard` show ime in android.
 #[repr(C)]
 pub struct UnityInitializer {
     /// set_texture(id, offsetX, offsetY, width, height, filter_mode, data)
@@ -29,6 +30,8 @@ pub struct UnityInitializer {
     paint_mesh: extern "C" fn(u64, u32, *const u8, u32, *const u8, f32, f32, f32, f32),
     /// end_paint()
     end_paint: extern "C" fn(),
+    /// show_keyboard(show)
+    show_keyboard: extern "C" fn(u32),
 }
 
 /// Context used by unity.
@@ -72,6 +75,7 @@ impl<T: App> UnityContext<T> {
         self.context.begin_frame(input);
         self.app.update(&self.context);
         let output = self.context.end_frame();
+        self.show_keyboard(self.context.wants_keyboard_input());
         if !output.repaint_after.is_zero() {
             return Ok(());
         }
@@ -157,5 +161,9 @@ impl<T: App> UnityContext<T> {
     /// Wrapper function for `end_paint` from unity.
     pub fn end_paint(&self) {
         (self.unity.end_paint)()
+    }
+
+    pub fn show_keyboard(&self, show: bool) {
+        (self.unity.show_keyboard)(if show { 1 } else { 0 });
     }
 }
