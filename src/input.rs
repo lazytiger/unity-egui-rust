@@ -8,7 +8,9 @@ use egui::Event::PointerButton;
 use protobuf::Message;
 
 use crate::Buffer;
-use crate::proto::input::{ButtonType, Event, EventType, Input, KeyType, Modifiers, Pos2, Rect};
+use crate::proto::input::{
+    ButtonType, Event, EventType, Input, KeyType, Modifiers, Pos2, Rect, Touch, TouchPhase,
+};
 
 fn key_type_from_pb_to_native(t: KeyType) -> Option<Key> {
     match t {
@@ -108,19 +110,22 @@ fn event_from_pb_to_native(e: Event) -> Option<egui::Event> {
         EventType::CUT => Some(egui::Event::Cut),
         EventType::PASTE => Some(egui::Event::Paste(e.paste)),
         EventType::TEXT => Some(egui::Event::Text(e.text)),
-        EventType::KEY => {
-            e
-                .key
-                .as_ref()
-                .map(|e| {
-                    e.key.enum_value().ok().map(key_type_from_pb_to_native).unwrap_or_default()
-                }).unwrap_or_default()
-                .map(|kt| egui::Event::Key {
-                    key: kt,
-                    pressed: e.key.pressed,
-                    modifiers: modifier_from_pb_to_native(&e.key.modifiers),
-                })
-        }
+        EventType::KEY => e
+            .key
+            .as_ref()
+            .map(|e| {
+                e.key
+                    .enum_value()
+                    .ok()
+                    .map(key_type_from_pb_to_native)
+                    .unwrap_or_default()
+            })
+            .unwrap_or_default()
+            .map(|kt| egui::Event::Key {
+                key: kt,
+                pressed: e.key.pressed,
+                modifiers: modifier_from_pb_to_native(&e.key.modifiers),
+            }),
         EventType::POINTER_MOVED => e
             .pointer_moved
             .as_ref()
@@ -152,7 +157,33 @@ fn event_from_pb_to_native(e: Event) -> Option<egui::Event> {
         EventType::ZOOM => Some(egui::Event::Zoom(e.zoom)),
         EventType::COMPOSITION_START => Some(egui::Event::CompositionStart),
         EventType::COMPOSITION_UPDATE => Some(egui::Event::CompositionUpdate(e.composition_update)),
-        EventType::TOUCH => None,
+        EventType::TOUCH => e.touch.as_ref().map(touch_from_pb_to_native).unwrap_or_default(),
+    }
+}
+
+fn touch_from_pb_to_native(touch: &Touch) -> Option<egui::Event> {
+    touch
+        .phase
+        .enum_value()
+        .ok()
+        .map(touch_phase_from_pb_to_native)
+        .unwrap_or_default()
+        .map(|phase| egui::Event::Touch {
+            device_id: egui::TouchDeviceId(touch.device_id),
+            id: egui::TouchId(touch.id),
+            phase,
+            pos: pos2_from_pb_to_native(touch.pos.get_or_default()),
+            force: touch.force,
+        })
+}
+
+fn touch_phase_from_pb_to_native(typ: TouchPhase) -> Option<egui::TouchPhase> {
+    match typ {
+        TouchPhase::TP_NONE => None,
+        TouchPhase::START => Some(egui::TouchPhase::Start),
+        TouchPhase::MOVE => Some(egui::TouchPhase::Move),
+        TouchPhase::END => Some(egui::TouchPhase::End),
+        TouchPhase::CANCEL => Some(egui::TouchPhase::Cancel),
     }
 }
 

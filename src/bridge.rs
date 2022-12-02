@@ -75,10 +75,10 @@ impl<T: App> UnityContext<T> {
         self.context.begin_frame(input);
         self.app.update(&self.context);
         let output = self.context.end_frame();
-        self.show_keyboard(self.context.wants_keyboard_input());
         if !output.repaint_after.is_zero() {
             return Ok(());
         }
+        self.show_keyboard(self.context.wants_keyboard_input());
         self.begin_paint();
         for id in output.textures_delta.free {
             self.rem_texture(id);
