@@ -14,3 +14,4 @@ uegui = { path = ".." }
 egui = { git = "https://github.com/lazytiger/egui.git" }
 eframe = { git = "https://github.com/lazytiger/egui.git" }
 egui_demo_lib = { git = "https://github.com/lazytiger/egui.git" }
+log = "0.4"

@@ -77,6 +77,7 @@ macro_rules! init {
         #[no_mangle]
         pub extern "C" fn init(initializer: $crate::UnityInitializer) -> $crate::EGuiInitializer {
             let context = $crate::UnityContext::new(initializer, $app);
+            context.init_log();
             $crate::EGuiInitializer {
                 update: update as _,
                 app: Box::leak(Box::new(context)) as *mut $crate::UnityContext<$name> as _,
@@ -92,11 +93,11 @@ macro_rules! init {
                 } else {
                     let app: &mut $crate::UnityContext<$name> = &mut *app;
                     if let Err(err) = app.update(input) {
-                        eprint!("unexpected error:{:?}", err);
+                        log::error!("unexpected error:{:?}", err);
                     }
                 }
             }) {
-                eprintln!("unwind error:{:?}", err);
+                log::error!("unwind error:{:?}", err);
             }
         }
     };

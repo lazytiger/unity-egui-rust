@@ -5,11 +5,15 @@
 //! On the other side, egui should provide a function to be called in every frame.
 //! All these works be done in `init` function.
 
-use egui::{ClippedPrimitive, Context, ImageData, TextureFilter, TextureId};
 use egui::epaint::{ImageDelta, Primitive};
+use egui::output::OutputEvent;
+use egui::{
+    ClippedPrimitive, Context, ImageData, PlatformOutput, TextureFilter, TextureId, WidgetType,
+};
+use log::{set_logger, set_max_level, Level, LevelFilter, Metadata, Record};
 
-use crate::{App, Buffer};
 use crate::input::parse_input;
+use crate::{App, Buffer};
 
 /// Unity provided functions for painting.
 /// `set_texture` add or update texture in unity.
@@ -31,7 +35,14 @@ pub struct UnityInitializer {
     /// end_paint()
     end_paint: extern "C" fn(),
     /// show_keyboard(show)
-    show_keyboard: extern "C" fn(u32),
+    show_keyboard: extern "C" fn(u32, *const u8, u32),
+    /// show_log(show, string)
+    show_log: extern "C" fn(u32, *const u8, u32),
+}
+
+pub struct UnityLogger {
+    show_log: extern "C" fn(u32, *const u8, u32),
+    log_level: LevelFilter,
 }
 
 /// Context used by unity.
@@ -39,6 +50,8 @@ pub struct UnityContext<T: App> {
     context: Context,
     unity: UnityInitializer,
     app: T,
+    text: String,
+    logger: UnityLogger,
 }
 
 fn texture_id_to_u64(id: TextureId) -> u64 {
@@ -53,6 +66,11 @@ impl<T: App> UnityContext<T> {
         let context = Context::default();
         let app = creator(&context);
         Self {
+            text: "".into(),
+            logger: UnityLogger {
+                show_log: initializer.show_log,
+                log_level: LevelFilter::Trace,
+            },
             unity: initializer,
             context,
             app,
@@ -78,6 +96,7 @@ impl<T: App> UnityContext<T> {
         if !output.repaint_after.is_zero() {
             return Ok(());
         }
+        self.update_platform(&output.platform_output);
         self.show_keyboard(self.context.wants_keyboard_input());
         self.begin_paint();
         for id in output.textures_delta.free {
@@ -92,6 +111,25 @@ impl<T: App> UnityContext<T> {
         }
         self.end_paint();
         Ok(())
+    }
+
+    pub fn update_platform(&mut self, platform: &PlatformOutput) {
+        for e in &platform.events {
+            let info = match e {
+                OutputEvent::Clicked(info) => info,
+                OutputEvent::DoubleClicked(info) => info,
+                OutputEvent::FocusGained(info) => info,
+                OutputEvent::TripleClicked(info) => info,
+                OutputEvent::TextSelectionChanged(info) => info,
+                OutputEvent::ValueChanged(info) => info,
+            };
+            match (info.typ, &info.current_text_value) {
+                (WidgetType::TextEdit, Some(text)) => {
+                    self.text = text.clone();
+                }
+                _ => (),
+            }
+        }
     }
 
     /// Wrapper function for `set_texture` from unity.
@@ -164,6 +202,59 @@ impl<T: App> UnityContext<T> {
     }
 
     pub fn show_keyboard(&self, show: bool) {
-        (self.unity.show_keyboard)(if show { 1 } else { 0 });
+        (self.unity.show_keyboard)(
+            if show { 1 } else { 0 },
+            self.text.as_ptr(),
+            self.text.len() as u32,
+        );
+    }
+
+    pub fn set_log_level(&mut self, level: LevelFilter) {
+        self.logger.log_level = level;
+    }
+
+    pub fn init_log(&self) {
+        set_logger(unsafe {
+            std::mem::transmute::<&UnityLogger, &'static UnityLogger>(&self.logger)
+        })
+        .map(|_| set_max_level(LevelFilter::Trace))
+        .unwrap();
+    }
+}
+
+impl log::Log for UnityLogger {
+    fn enabled(&self, metadata: &Metadata) -> bool {
+        self.log_level <= metadata.level()
+    }
+
+    fn log(&self, record: &Record) {
+        if !self.enabled(record.metadata()) {
+            return;
+        }
+        let message = format!(
+            "{}[{}:{}][{}]{}",
+            chrono::Local::now().format("[%Y-%m-%d %H:%M:%S%.6f]"),
+            record.file().unwrap_or("unknown"),
+            record.line().unwrap_or(0),
+            record.level(),
+            record.args(),
+        );
+        (self.show_log)(
+            log_level_to_unity(record.level()),
+            message.as_ptr(),
+            message.len() as u32,
+        );
+    }
+
+    fn flush(&self) {}
+}
+
+fn log_level_to_unity(level: Level) -> u32 {
+    match level {
+        Level::Error => 1,
+        Level::Debug => 4,
+        Level::Trace => 4,
+        Level::Info => 4,
+        Level::Warn => 3,
     }
 }
