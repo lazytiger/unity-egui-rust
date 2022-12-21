@@ -3,14 +3,14 @@
 //! this project is using.
 use std::ptr::slice_from_raw_parts;
 
-use egui::{Key, RawInput};
 use egui::Event::PointerButton;
+use egui::{Key, RawInput};
 use protobuf::Message;
 
-use crate::Buffer;
 use crate::proto::input::{
     ButtonType, Event, EventType, Input, KeyType, Modifiers, Pos2, Rect, Touch, TouchPhase,
 };
+use crate::Buffer;
 
 fn key_type_from_pb_to_native(t: KeyType) -> Option<Key> {
     match t {
@@ -122,6 +122,7 @@ fn event_from_pb_to_native(e: Event) -> Option<egui::Event> {
             })
             .unwrap_or_default()
             .map(|kt| egui::Event::Key {
+                repeat: false,
                 key: kt,
                 pressed: e.key.pressed,
                 modifiers: modifier_from_pb_to_native(&e.key.modifiers),
@@ -157,7 +158,11 @@ fn event_from_pb_to_native(e: Event) -> Option<egui::Event> {
         EventType::ZOOM => Some(egui::Event::Zoom(e.zoom)),
         EventType::COMPOSITION_START => Some(egui::Event::CompositionStart),
         EventType::COMPOSITION_UPDATE => Some(egui::Event::CompositionUpdate(e.composition_update)),
-        EventType::TOUCH => e.touch.as_ref().map(touch_from_pb_to_native).unwrap_or_default(),
+        EventType::TOUCH => e
+            .touch
+            .as_ref()
+            .map(touch_from_pb_to_native)
+            .unwrap_or_default(),
     }
 }
 
