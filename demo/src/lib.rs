@@ -34,7 +34,6 @@ struct MyDemoApp {
 
 impl uegui::App for MyDemoApp {
     fn update(&mut self, ctx: &egui::Context) {
-        log::info!("update now");
         self.demo.ui(ctx);
     }
 }

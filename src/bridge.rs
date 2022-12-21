@@ -5,6 +5,8 @@
 //! On the other side, egui should provide a function to be called in every frame.
 //! All these works be done in `init` function.
 
+use std::sync::{Arc, Mutex};
+
 use egui::epaint::{ImageDelta, Primitive};
 use egui::output::OutputEvent;
 use egui::{
@@ -25,33 +27,36 @@ use crate::{App, Buffer};
 #[repr(C)]
 pub struct UnityInitializer {
     /// set_texture(id, offsetX, offsetY, width, height, filter_mode, data)
-    set_texture: extern "C" fn(u64, u32, u32, u32, u32, u32, *const u8),
+    set_texture: extern "system" fn(u64, u32, u32, u32, u32, u32, *const u8),
     /// rem_texture(id)
-    rem_texture: extern "C" fn(u64),
+    rem_texture: extern "system" fn(u64),
     /// begin_paint()
-    begin_paint: extern "C" fn(),
+    begin_paint: extern "system" fn(),
     /// paint_mesh(texture_id, vertex_count, vertex_buffer, index_count, index_buffer, bound_min_x, bound_min_y, bound_max_x, bound_max_y)
-    paint_mesh: extern "C" fn(u64, u32, *const u8, u32, *const u8, f32, f32, f32, f32),
+    paint_mesh: extern "system" fn(u64, u32, *const u8, u32, *const u8, f32, f32, f32, f32),
     /// end_paint()
-    end_paint: extern "C" fn(),
-    /// show_keyboard(show)
-    show_keyboard: extern "C" fn(u32, *const u8, u32),
+    end_paint: extern "system" fn(),
+    /// show_keyboard(show, string)
+    show_keyboard: extern "system" fn(u32, *const u8, u32),
     /// show_log(show, string)
-    show_log: extern "C" fn(u32, *const u8, u32),
+    show_log: extern "system" fn(i32, *const u8, i32),
 }
 
 pub struct UnityLogger {
-    show_log: extern "C" fn(u32, *const u8, u32),
+    unity: Arc<UnityInitializer>,
     log_level: LevelFilter,
+}
+
+lazy_static::lazy_static! {
+    static ref LOGGER: Mutex<Option<UnityLogger>> = Mutex::new(None);
 }
 
 /// Context used by unity.
 pub struct UnityContext<T: App> {
     context: Context,
-    unity: UnityInitializer,
+    unity: Arc<UnityInitializer>,
     app: T,
     text: String,
-    logger: UnityLogger,
 }
 
 fn texture_id_to_u64(id: TextureId) -> u64 {
@@ -63,14 +68,20 @@ fn texture_id_to_u64(id: TextureId) -> u64 {
 
 impl<T: App> UnityContext<T> {
     pub fn new<C: FnOnce(&Context) -> T>(initializer: UnityInitializer, creator: C) -> Self {
+        let initializer = Arc::new(initializer);
         let context = Context::default();
         let app = creator(&context);
+        LOGGER
+            .lock()
+            .map(|mut logger| {
+                logger.replace(UnityLogger {
+                    unity: initializer.clone(),
+                    log_level: LevelFilter::Trace,
+                });
+            })
+            .unwrap();
         Self {
             text: "".into(),
-            logger: UnityLogger {
-                show_log: initializer.show_log,
-                log_level: LevelFilter::Trace,
-            },
             unity: initializer,
             context,
             app,
@@ -209,22 +220,31 @@ impl<T: App> UnityContext<T> {
         );
     }
 
-    pub fn set_log_level(&mut self, level: LevelFilter) {
-        self.logger.log_level = level;
+    pub fn set_log_level(&self, level: LevelFilter) {
+        LOGGER
+            .lock()
+            .map(|mut logger| logger.as_mut().map(|mut logger| logger.log_level = level))
+            .unwrap();
     }
 
     pub fn init_log(&self) {
-        set_logger(unsafe {
-            std::mem::transmute::<&UnityLogger, &'static UnityLogger>(&self.logger)
-        })
-        .map(|_| set_max_level(LevelFilter::Trace))
-        .unwrap();
+        LOGGER
+            .lock()
+            .map(|logger| {
+                logger.as_ref().map(|logger| {
+                    let logger: &'static UnityLogger = unsafe { std::mem::transmute(logger) };
+                    set_logger(logger).map(|_| set_max_level(LevelFilter::Trace))
+                })
+            })
+            .unwrap()
+            .unwrap()
+            .unwrap();
     }
 }
 
 impl log::Log for UnityLogger {
     fn enabled(&self, metadata: &Metadata) -> bool {
-        self.log_level <= metadata.level()
+        self.log_level >= metadata.level()
     }
 
     fn log(&self, record: &Record) {
@@ -239,17 +259,17 @@ impl log::Log for UnityLogger {
             record.level(),
             record.args(),
         );
-        (self.show_log)(
+        (self.unity.show_log)(
             log_level_to_unity(record.level()),
             message.as_ptr(),
-            message.len() as u32,
+            message.len() as i32,
         );
     }
 
     fn flush(&self) {}
 }
 
-fn log_level_to_unity(level: Level) -> u32 {
+fn log_level_to_unity(level: Level) -> i32 {
     match level {
         Level::Error => 1,
         Level::Debug => 4,
