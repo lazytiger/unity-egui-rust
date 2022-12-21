@@ -76,11 +76,11 @@ macro_rules! init {
     ($name:ident, $app:expr) => {
         #[no_mangle]
         pub extern "C" fn init(initializer: $crate::UnityInitializer) -> $crate::EGuiInitializer {
-            let context = $crate::UnityContext::new(initializer, $app);
+            let context = Box::new($crate::UnityContext::new(initializer, $app));
             context.init_log();
             $crate::EGuiInitializer {
                 update: update as _,
-                app: Box::leak(Box::new(context)) as *mut $crate::UnityContext<$name> as _,
+                app: Box::leak(context) as *mut $crate::UnityContext<$name> as _,
             }
         }
 

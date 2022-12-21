@@ -5,8 +5,6 @@
 //! On the other side, egui should provide a function to be called in every frame.
 //! All these works be done in `init` function.
 
-use std::sync::{Arc, Mutex};
-
 use egui::epaint::{ImageDelta, Primitive};
 use egui::output::OutputEvent;
 use egui::{
@@ -43,18 +41,15 @@ pub struct UnityInitializer {
 }
 
 pub struct UnityLogger {
-    unity: Arc<UnityInitializer>,
+    show_log: extern "system" fn(i32, *const u8, i32),
     log_level: LevelFilter,
-}
-
-lazy_static::lazy_static! {
-    static ref LOGGER: Mutex<Option<UnityLogger>> = Mutex::new(None);
 }
 
 /// Context used by unity.
 pub struct UnityContext<T: App> {
     context: Context,
-    unity: Arc<UnityInitializer>,
+    unity: UnityInitializer,
+    logger: UnityLogger,
     app: T,
     text: String,
 }
@@ -68,20 +63,14 @@ fn texture_id_to_u64(id: TextureId) -> u64 {
 
 impl<T: App> UnityContext<T> {
     pub fn new<C: FnOnce(&Context) -> T>(initializer: UnityInitializer, creator: C) -> Self {
-        let initializer = Arc::new(initializer);
         let context = Context::default();
         let app = creator(&context);
-        LOGGER
-            .lock()
-            .map(|mut logger| {
-                logger.replace(UnityLogger {
-                    unity: initializer.clone(),
-                    log_level: LevelFilter::Trace,
-                });
-            })
-            .unwrap();
         Self {
             text: "".into(),
+            logger: UnityLogger {
+                show_log: initializer.show_log,
+                log_level: LevelFilter::Trace,
+            },
             unity: initializer,
             context,
             app,
@@ -220,24 +209,14 @@ impl<T: App> UnityContext<T> {
         );
     }
 
-    pub fn set_log_level(&self, level: LevelFilter) {
-        LOGGER
-            .lock()
-            .map(|mut logger| logger.as_mut().map(|mut logger| logger.log_level = level))
-            .unwrap();
+    pub fn set_log_level(&mut self, level: LevelFilter) {
+        self.logger.log_level = level;
     }
 
     pub fn init_log(&self) {
-        LOGGER
-            .lock()
-            .map(|logger| {
-                logger.as_ref().map(|logger| {
-                    let logger: &'static UnityLogger = unsafe { std::mem::transmute(logger) };
-                    set_logger(logger).map(|_| set_max_level(LevelFilter::Trace))
-                })
-            })
-            .unwrap()
-            .unwrap()
+        let logger: &'static UnityLogger = unsafe { std::mem::transmute(&self.logger) };
+        set_logger(logger)
+            .map(|_| set_max_level(LevelFilter::Trace))
             .unwrap();
     }
 }
@@ -259,7 +238,7 @@ impl log::Log for UnityLogger {
             record.level(),
             record.args(),
         );
-        (self.unity.show_log)(
+        (self.show_log)(
             log_level_to_unity(record.level()),
             message.as_ptr(),
             message.len() as i32,
