@@ -34,7 +34,6 @@ struct MyDemoApp {
 
 impl uegui::App for MyDemoApp {
     fn update(&mut self, ctx: &egui::Context) {
-        log::info!("update now, input:{}", ctx.wants_keyboard_input());
         self.demo.ui(ctx);
     }
 }

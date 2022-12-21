@@ -5,6 +5,8 @@
 //! On the other side, egui should provide a function to be called in every frame.
 //! All these works be done in `init` function.
 
+use std::time::Instant;
+
 use egui::epaint::{ImageDelta, Primitive};
 use egui::output::OutputEvent;
 use egui::{
@@ -90,14 +92,17 @@ impl<T: App> UnityContext<T> {
     /// 10. call `end_paint` from unity
     pub fn update(&mut self, buffer: Buffer) -> Result<(), protobuf::Error> {
         let input = parse_input(buffer)?;
+        let begin = Instant::now();
         self.context.begin_frame(input);
         self.app.update(&self.context);
         let output = self.context.end_frame();
+        log::info!("frame cpu cost:{}", begin.elapsed().as_micros());
         if !output.repaint_after.is_zero() {
             return Ok(());
         }
         self.update_platform(&output.platform_output);
         self.show_keyboard(self.context.wants_keyboard_input());
+        let begin = Instant::now();
         self.begin_paint();
         for id in output.textures_delta.free {
             self.rem_texture(id);
@@ -110,10 +115,12 @@ impl<T: App> UnityContext<T> {
             self.paint_mesh(cp);
         }
         self.end_paint();
+        log::info!("frame gpu cost:{}", begin.elapsed().as_micros());
         Ok(())
     }
 
     pub fn update_platform(&mut self, platform: &PlatformOutput) {
+        self.text.clear();
         for e in &platform.events {
             let info = match e {
                 OutputEvent::Clicked(info) => info,
