@@ -7,7 +7,7 @@ edition = "2021"
 
 
 [dependencies]
-egui = { features = ["bytemuck", "unity"], git = "https://github.com/lazytiger/egui.git" }
+egui = { features = ["bytemuck", "unity"], version = "0.21" }
 protobuf = { version = "3.2" }
 bytemuck = { version = "1.12" }
 log = { version = "0.4" }
